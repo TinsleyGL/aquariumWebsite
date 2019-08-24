@@ -42,4 +42,4 @@ class Aquarium(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Aquarium {}, Owner {}>'.format(self.name, self.user_id)
+        return '<Aquarium {}, Owner {}>'.format(self.name, self.userAquarium.username)

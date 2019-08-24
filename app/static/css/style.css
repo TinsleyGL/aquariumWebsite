@@ -1,0 +1,24 @@
+* {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #8fb7f7;
+}
+
+.flexContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+}
+
+#loginForm {
+
+}
+
+#header {
+    height: 10vh;
+}

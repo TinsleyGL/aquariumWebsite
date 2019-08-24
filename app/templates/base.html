@@ -1,18 +1,28 @@
-<html>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         {% if title %}
         <title>{{ title }} - microblog</title>
         {% else %}
         <title>microblog</title>
         {% endif %}
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-        <div>
+        <div id = 'header'>
             Microblog:
             <a href="{{ url_for('index') }}">Home</a>
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
             {% else %}
+            <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
             <a href="{{ url_for('logout') }}">Logout</a>
             {% endif %}
         </div>
@@ -27,5 +37,7 @@
         {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
-    </body>
+    </body> 
 </html>
+
+
