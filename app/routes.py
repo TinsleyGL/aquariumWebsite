@@ -4,6 +4,36 @@ from app.forms import LoginForm,RegistrationForm
 from flask import request, render_template, flash, redirect,url_for
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
+from random import random
+from time import sleep
+from threading import Thread, Event
+from app import socketio
+
+#test code
+thread = Thread()
+thread_stop_event = Event()
+
+class RandomThread(Thread):
+    def __init__(self):
+        self.delay = 1
+        super(RandomThread, self).__init__()
+
+    def randomNumberGenerator(self):
+        """
+        Generate a random number every 1 second and emit to a socketio instance (broadcast)
+        Ideally to be run in a separate thread?
+        """
+        #infinite loop of magical random numbers
+        print("Making random numbers")
+        while not thread_stop_event.isSet():
+            number = round(random()*10, 3)
+            print(number)
+            socketio.emit('newnumber', {'number': number}, namespace='/test')
+            sleep(self.delay)
+
+    def run(self):
+        self.randomNumberGenerator()
+#test code
 
 @app.route('/')
 @app.route('/index')
@@ -82,12 +112,25 @@ def receive_data():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    '''
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
-    '''
+
     posts = user.posts.all()
     aquariums = user.aquariums.all()
     return render_template('user.html', user=user, posts=posts, aquariums=aquariums)
+
+@socketio.on('connect', namespace='/test')
+def test_connect():
+    # need visibility of the global thread object
+    # global thread
+    print('Client connected')
+
+    #Start the random number generator thread only if the thread has not been started before.
+    '''
+    if not thread.isAlive():
+        print("Starting Thread")
+        thread = RandomThread()
+        thread.start()
+    '''
+
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+    print('Client disconnected')
