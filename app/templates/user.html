@@ -11,29 +11,40 @@
         {% extends "base.html" %}
 
         {% block content %}
-            <h1>User: {{ user.username }}</h1>
-            <hr>
-            {% for post in posts %}
-            <p>
-            {{ post.author.username }} says: <b>{{ post.body }}</b>
-            </p>
-            {% endfor %}
-            <hr>
-            {% for aquarium in aquariums %}
-            <p>
-            Temperature: {{ aquarium.temperature }} 
-            PH: {{ aquarium.ph }}  
-            </p>
-            {% endfor %}
-            <script src="../static/js/application.js"></script>
-            <div class="container" id="content">
-                <div class="row">
-                    <p>Asynchronous page updates will appear here:</p>
-                    <h3>Number list:</h3>
-                    <div id="log">
-                    </div> <!-- /#log -->
+        <div class='flexBox1' id='nameBar'>
+            <div>
+                <h1>Hi {{ user.username }}</h1>
+            </div>
+            <div>
+
+            </div>
+        </div>
+        {% for aquarium in aquariums %}
+        <div class="flexBox2" id="aquariumView">
+            <div class="flexBox1" id="aquariumBox">
+                <div class="flexBox1" id="aquariumInfo">
+                    <h3>{{ aquarium.name}}</h3>
+                    <img src="../static/images/IMG_2991.JPG" alt="" class="aquariumImage">
+                </div>
+                <div class="flexBox1" id="aquariumData">
+                    <p>Temperature: {{ aquarium.temperature }}</p>
+                    <p>PH: {{  aquarium.ph }}</p>
+                    <div id="idy">
+                        <div id="gauge1" style='width:100px; height:150px'></div>
+                        <div id="gauge2" style='width:100px; height:150px'></div>
+                        <div id="gauge3" style='width:100px; height:150px'></div>
+                        <div id="gauge4" style='width:100px; height:150px'></div>
+                    </div>
                 </div>
             </div>
+
+            <div class="flexBox1" id="">
+                <p>Area for social media</p>
+
+            </div>
+        </div>
+        {% endfor %}
+        <script src="../static/js/application.js"></script>
         {% endblock %}
     </body>
 </html>

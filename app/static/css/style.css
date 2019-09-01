@@ -5,7 +5,17 @@
 }
 
 body {
-    background-color: #8fb7f7;
+    background-color: #ededed;
+
+}
+
+#content {
+    display: flex;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    flex-direction: column;
+    background-color: white;
+    height: 90vh;
 }
 
 .flexContainer {
@@ -15,10 +25,56 @@ body {
     height: 90vh;
 }
 
-#loginForm {
-
-}
-
 #header {
     height: 10vh;
 }
+
+
+/* styles for user profile page */
+
+.flexBox1 {
+    display: flex;
+}
+.flexBox2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.aquariumImage {
+    width: auto;
+    height: 150px;
+    max-width: 100%;
+    border-radius: 20px;
+}
+
+#nameBar {
+    padding: 2vw;
+
+}
+
+#aquariumView {
+    background-color: #d6d6ff;
+    margin: 2vw;
+    padding: 1vw;
+    border-radius: 20px;
+}
+
+#aquariumBox {
+
+}
+
+#aquariumInfo {
+    flex-direction: column;
+}
+ 
+#aquariumData {
+
+}
+
+#idy{
+    display: flex;
+
+}
+
+
+/* end of styles for user profile page */
