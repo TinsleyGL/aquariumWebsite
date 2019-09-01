@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User,Post,Aquarium
+from app.models import User,Post,Aquarium, AquariumData
 from app.forms import LoginForm,RegistrationForm
 from flask import request, render_template, flash, redirect,url_for
 from flask_login import current_user, login_user, logout_user, login_required
@@ -71,17 +71,19 @@ def receive_data():
         request.form.get('PH'),
         User.query.get(int(request.form.get('UserID')))
     )
+    aqua = Aquarium.query.filter(Aquarium.name == request.form.get('Aquarium')).first()
+    #print(aqua.id)
+    #print (Aquarium.query.get(aqua.id))
     
-    data = Aquarium (
-        userAquarium = User.query.get(int(request.form.get('UserID'))),
-        name = request.form.get('Aquarium'),
+    data = AquariumData (
+        linkedAquarium = Aquarium.query.get(aqua.id),
         temperature = request.form.get('Temperature'),
         ph = request.form.get('PH')
     )
     db.session.add(data)
     db.session.commit()
     
-    return (request.form.get('PH'))
+    return ('hello')
 
 @app.route('/user/<username>')
 @login_required

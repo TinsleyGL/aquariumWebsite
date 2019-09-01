@@ -37,9 +37,18 @@ class Aquarium(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    temperature = db.Column(db.Integer)
-    ph = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    data = db.relationship('AquariumData', backref='linkedAquarium', lazy='dynamic')
 
     def __repr__(self):
         return '<Aquarium {}, Owner {}>'.format(self.name, self.userAquarium.username)
+
+class AquariumData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    temperature = db.Column(db.Integer)
+    ph = db.Column(db.Integer)
+    aquarium_id = db.Column(db.Integer, db.ForeignKey('aquarium.id'))
+
+    def __repr__(self):
+        return '<aquarium {}>'.format(self.linkedAquarium.name)
