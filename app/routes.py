@@ -101,6 +101,10 @@ def handle_client_connect_event(json):
 @socketio.on('sendData')
 def handle(json):
     #print('received json: {0}'.format(str(json)))
+    #for aquariums in current_user.aquariums:
+        #print (aquariums.data)
+
+
     for aquariums in current_user.aquariums:
         emit('data', {
             'temp': aquariums.temperature,
