@@ -1,50 +1,193 @@
 <!DOCTYPE html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        {% extends "base.html" %}
 
-        {% block content %}
-        <div class='flexBox1' id='nameBar'>
-            <div>
-                <h1>Hi {{ user.username }}</h1>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+
+</head>
+
+<body class="w3-light-grey">
+    {% extends "base.html" %}
+    {% block content %}
+    <script type="text/javascript">
+        var name = '{{ aquarium.name }}';
+    </script>
+
+    <script src="../static/js/application.js"></script>
+
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+        <div class="w3-container w3-row">
+            <div class="w3-col s4">
+                <img src="/w3images/avatar2.png" class="w3-circle w3-margin-right" style="width:46px">
             </div>
-            <div>
-
+            <div class="w3-col s8 w3-bar">
+                <span>Welcome, <strong>{{user.username}}</strong></span><br>
+                <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
+                <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
+                <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
             </div>
         </div>
-        {% for aquarium in aquariums %}
-        <div class="flexBox2" id="aquariumView">
-            <div class="flexBox1" id="aquariumBox">
-                <div class="flexBox1" id="aquariumInfo">
-                    <h3>{{ aquarium.name}}</h3>
-                    <img src="../static/images/IMG_2991.JPG" alt="" class="aquariumImage">
-                </div>
-                <div class="flexBox1" id="aquariumData">
-                    <p>Temperature: {{ aquarium.temperature }}</p>
-                    <p>PH: {{  aquarium.ph }}</p>
-                    <div id="idy">
-                        <div id="gauge1" style='width:100px; height:150px'></div>
-                        <div id="gauge2" style='width:100px; height:150px'></div>
-                        <div id="gauge3" style='width:100px; height:150px'></div>
-                        <div id="gauge4" style='width:100px; height:150px'></div>
+        <hr>
+        <div class="w3-container">
+            <h5>Dashboard</h5>
+        </div>
+        <div class="w3-bar-block">
+            <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
+                onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding w3-blue" onclick="myFunction('Demo1')"><i
+                    class="fa fa-users fa-fw"></i> Aquariums</a>
+            <div id='Demo1' class="w3-hide">
+                {% for aquarium in aquariums%}
+                <a href="{{ url_for('user1', username=current_user.username, aquarium=aquarium.name) }}" class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i class="fa fa-users fa-fw"></i> {{ aquarium.name }}</a>
+                {% endfor %}
+            </div>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i> Viewers</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Posts</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Parameter
+                Changes</a>
+        </div>
+    </nav>
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+        <!-- Header -->
+        <header class="w3-container" style="padding-top:22px">
+            <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+        </header>
+
+        <div class="w3-row-padding w3-margin-bottom">
+            <div class="w3-quarter">
+                <div class="w3-container w3-light-blue w3-padding-16">
+                    <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3 id="temperature">{{ defaultAquariumData.temperature }}</h3>
                     </div>
+                    <div class="w3-clear"></div>
+                    <h4>Temperature</h4>
                 </div>
             </div>
-
-            <div class="flexBox1" id="">
-                <p>Area for social media</p>
-
+            <div class="w3-quarter">
+                <div class="w3-container w3-light-blue w3-padding-16">
+                    <div class="w3-left"><i class="fa fa-eye w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3 id ="ph" >{{ defaultAquariumData.ph }}</h3>
+                    </div>
+                    <div class="w3-clear"></div>
+                    <h4>PH</h4>
+                </div>
+            </div>
+            <div class="w3-quarter">
+                <div class="w3-container w3-light-blue w3-padding-16">
+                    <div class="w3-left"><i class="fa fa-share-alt w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3>75%</h3>
+                    </div>
+                    <div class="w3-clear"></div>
+                    <h4>Filter Flow</h4>
+                </div>
+            </div>
+            <div class="w3-quarter">
+                <div class="w3-container w3-light-blue w3-text-white w3-padding-16">
+                    <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
+                    <div class="w3-right">
+                        <h3>90%</h3>
+                    </div>
+                    <div class="w3-clear"></div>
+                    <h4>Water Clarity</h4>
+                </div>
             </div>
         </div>
-        {% endfor %}
-        <script src="../static/js/application.js"></script>
+
+        <div class="w3-panel">
+            <div class="w3-row-padding" style="margin:0 -16px">
+                <div class="w3-third">
+                    <h5>Aquarium: {{ aquarium.name }}</h5>
+                    <img src="../static/images/IMG_2991.JPG" style="width:100%" alt="Google Regional Map">
+                </div>
+                <div class="w3-twothird">
+                    <h5>Recent Posts</h5>
+                    <table class="w3-table w3-striped w3-white">
+                        <tr>
+                            <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
+                            <td>New record, over 90 views.</td>
+                            <td><i>10 mins</i></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
+                            <td>Database error.</td>
+                            <td><i>15 mins</i></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-users w3-text-yellow w3-large"></i></td>
+                            <td>New record, over 40 users.</td>
+                            <td><i>17 mins</i></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-comment w3-text-red w3-large"></i></td>
+                            <td>New comments.</td>
+                            <td><i>25 mins</i></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+                            <td>Check transactions.</td>
+                            <td><i>28 mins</i></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-laptop w3-text-red w3-large"></i></td>
+                            <td>CPU overload.</td>
+                            <td><i>35 mins</i></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fa fa-share-alt w3-text-green w3-large"></i></td>
+                            <td>New shares.</td>
+                            <td><i>39 mins</i></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Get the Sidebar
+            var mySidebar = document.getElementById("mySidebar");
+
+            // Get the DIV with overlay effect
+            var overlayBg = document.getElementById("myOverlay");
+
+            // Toggle between showing and hiding the sidebar, and add overlay effect
+            function w3_open() {
+                if (mySidebar.style.display === 'block') {
+                    mySidebar.style.display = 'none';
+                    overlayBg.style.display = "none";
+                } else {
+                    mySidebar.style.display = 'block';
+                    overlayBg.style.display = "block";
+                }
+            }
+
+            // Close the sidebar with the close button
+            function w3_close() {
+                mySidebar.style.display = "none";
+                overlayBg.style.display = "none";
+            }
+        </script>
+
+        <script>
+            function myFunction(id) {
+                var x = document.getElementById(id);
+                if (x.className.indexOf("w3-show") == -1) {
+                    x.className += " w3-show";
+                } else {
+                    x.className = x.className.replace(" w3-show", "");
+                }
+            }
+        </script>
         {% endblock %}
-    </body>
+</body>
+
 </html>

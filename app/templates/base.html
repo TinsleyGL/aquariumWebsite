@@ -10,22 +10,27 @@
         {% endif %}
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
         <script src="../static/js/justgage.js"></script>
         <script src="../static/js/raphael-2.1.4.min.js"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
     </head>
     <body>
-        <div id = 'header'>
-            Microblog:
-            <a href="{{ url_for('index') }}">Home</a>
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-            <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
+        <div class="w3-top">
+            <div class="w3-bar w3-blue-grey w3-card">
+                    <a href="{{ url_for('index') }}" class="w3-bar-item w3-button w3-padding-large">Home</a>
+                    {% if current_user.is_anonymous %}
+                    <a href="{{ url_for('login') }}" class="w3-bar-item w3-button w3-padding-large">Login</a>
+                    {% else %}
+                    <a href="{{ url_for('user', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding-large">Profile</a>
+                    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+                    {% endif %}
+            </div>
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}

@@ -9,6 +9,7 @@ from time import sleep
 from threading import Thread, Event
 from app import socketio
 from flask_socketio import send,emit
+import json
 
 @app.route('/')
 @app.route('/index')
@@ -89,10 +90,24 @@ def receive_data():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-
     posts = user.posts.all()
     aquariums = user.aquariums.all()
-    return render_template('user.html', user=user, posts=posts, aquariums=aquariums)
+    aquarium = aquariums[0]
+    #print(aquariums[0])
+    defaultAquarium = aquariums[0].data
+    defaultAquariumData = defaultAquarium.order_by(AquariumData.timestamp.desc()).first()
+    return render_template('user.html', user=user, posts=posts, aquariums=aquariums, defaultAquarium=defaultAquarium, defaultAquariumData=defaultAquariumData, aquarium=aquarium)
+
+@app.route('/user/<username>/<aquarium>')
+@login_required
+def user1(username, aquarium):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = user.posts.all()
+    userAquariums = user.aquariums.all()
+    selectedAquarium = Aquarium.query.filter(Aquarium.name == aquarium ).filter(Aquarium.user_id == user.id).first()
+    defaultAquarium = selectedAquarium.data
+    defaultAquariumData = defaultAquarium.order_by(AquariumData.timestamp.desc()).first()
+    return render_template('user.html', user=user, posts=posts, aquariums=userAquariums, defaultAquarium=defaultAquarium, defaultAquariumData=defaultAquariumData)
 
 @socketio.on('client_connected')
 def handle_client_connect_event(json):
@@ -100,14 +115,14 @@ def handle_client_connect_event(json):
 
 @socketio.on('sendData')
 def handle(json):
-    #print('received json: {0}'.format(str(json)))
-    #for aquariums in current_user.aquariums:
-        #print (aquariums.data)
-
-
+    jsonFile = {}
     for aquariums in current_user.aquariums:
-        emit('data', {
-            'temp': aquariums.temperature,
-            'ph': aquariums.ph
-            }
-        )
+        a = aquariums.data.order_by(AquariumData.timestamp.desc())
+        dict = {
+            'temp': a.first().temperature,
+            'ph': a.first().ph
+        }
+        jsonFile[aquariums.name] = dict
+    print (jsonFile)
+    emit('data', jsonFile
+    )
