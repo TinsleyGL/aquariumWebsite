@@ -7,7 +7,7 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Sign In')
+    userLogin = SubmitField('Login')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -15,7 +15,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+    register = SubmitField('Register')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
@@ -26,3 +26,13 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+class CreateAquariumForm(FlaskForm):
+    aquariumName = StringField('Aquarium Name', validators=[DataRequired()])
+    targetTemp = StringField('Regular Temperature',validators=[DataRequired()])
+    targetPH = StringField('Regular PH', validators=[DataRequired()])
+    targetWaterflow = StringField('Filter Flow Rate ', validators=[DataRequired()])
+    createAquarium = SubmitField('Create Aquarium')
+
+
+

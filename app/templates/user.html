@@ -7,23 +7,16 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="">
-
 </head>
 
 <body class="w3-light-grey">
     {% extends "base.html" %}
     {% block content %}
-    <script type="text/javascript">
-        var name = '{{ aquarium.name }}';
-    </script>
-
-    <script src="../static/js/application.js"></script>
-
+    <script src="/js/application.js"></script>
     <!-- Sidebar/menu -->
     <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
         <div class="w3-container w3-row">
             <div class="w3-col s4">
-                <img src="/w3images/avatar2.png" class="w3-circle w3-margin-right" style="width:46px">
             </div>
             <div class="w3-col s8 w3-bar">
                 <span>Welcome, <strong>{{user.username}}</strong></span><br>
@@ -42,9 +35,16 @@
             <a href="#" class="w3-bar-item w3-button w3-padding w3-blue" onclick="myFunction('Demo1')"><i
                     class="fa fa-users fa-fw"></i> Aquariums</a>
             <div id='Demo1' class="w3-hide">
-                {% for aquarium in aquariums%}
-                <a href="{{ url_for('user1', username=current_user.username, aquarium=aquarium.name) }}" class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i class="fa fa-users fa-fw"></i> {{ aquarium.name }}</a>
+                {% if aquariumList is defined %}
+                {% for aquarium in aquariumList%}
+                <a href="{{ url_for('user1', username=current_user.username, aquarium=aquarium.name) }}"
+                    class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i class="fa fa-users fa-fw"></i>
+                    {{ aquarium.name }}</a>
                 {% endfor %}
+                {% else %}
+                <a href='#' class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i
+                        class="fa fa-users fa-fw"></i> Add Aquarium</a>
+                {% endif %}
             </div>
             <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i> Viewers</a>
             <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Posts</a>
@@ -53,38 +53,39 @@
         </div>
     </nav>
 
+    {% if aquariumList is defined %}
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
         <!-- Header -->
         <header class="w3-container" style="padding-top:22px">
-            <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+            <h5><b><i class="fa fa-dashboard"></i>Dashboard</b></h5>
         </header>
 
         <div class="w3-row-padding w3-margin-bottom">
             <div class="w3-quarter">
-                <div class="w3-container w3-light-blue w3-padding-16">
-                    <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
+                <div class="w3-container w3-indigo w3-padding-16">
+                    <div class="w3-left"><i class="fas fa-thermometer-quarter w3-xxxlarge"></i></div>
                     <div class="w3-right">
-                        <h3 id="temperature">{{ defaultAquariumData.temperature }}</h3>
+                        <h3 id="{{ defaultAquarium.name }}temperature">{{ defaultAquariumDataOrdered.temperature }}</h3>
                     </div>
                     <div class="w3-clear"></div>
                     <h4>Temperature</h4>
                 </div>
             </div>
             <div class="w3-quarter">
-                <div class="w3-container w3-light-blue w3-padding-16">
-                    <div class="w3-left"><i class="fa fa-eye w3-xxxlarge"></i></div>
+                <div class="w3-container w3-indigo w3-padding-16">
+                    <div class="w3-left"><i class="fas fa-flask w3-xxxlarge"></i></div>
                     <div class="w3-right">
-                        <h3 id ="ph" >{{ defaultAquariumData.ph }}</h3>
+                        <h3 id="{{ defaultAquarium.name }}ph">{{ defaultAquariumDataOrdered.ph }}</h3>
                     </div>
                     <div class="w3-clear"></div>
                     <h4>PH</h4>
                 </div>
             </div>
             <div class="w3-quarter">
-                <div class="w3-container w3-light-blue w3-padding-16">
-                    <div class="w3-left"><i class="fa fa-share-alt w3-xxxlarge"></i></div>
+                <div class="w3-container w3-indigo w3-padding-16">
+                    <div class="w3-left"><i class="fas fa-water w3-xxxlarge"></i></div>
                     <div class="w3-right">
                         <h3>75%</h3>
                     </div>
@@ -93,8 +94,8 @@
                 </div>
             </div>
             <div class="w3-quarter">
-                <div class="w3-container w3-light-blue w3-text-white w3-padding-16">
-                    <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
+                <div class="w3-container w3-indigo w3-padding-16">
+                    <div class="w3-left"><i class="fas fa-tint w3-xxxlarge"></i></div>
                     <div class="w3-right">
                         <h3>90%</h3>
                     </div>
@@ -107,8 +108,8 @@
         <div class="w3-panel">
             <div class="w3-row-padding" style="margin:0 -16px">
                 <div class="w3-third">
-                    <h5>Aquarium: {{ aquarium.name }}</h5>
-                    <img src="../static/images/IMG_2991.JPG" style="width:100%" alt="Google Regional Map">
+                    <h5>Aquarium: {{ defaultAquarium.name }}</h5>
+                    <img src="/images/IMG_2991.JPG" style="width:100%" alt="Google Regional Map">
                 </div>
                 <div class="w3-twothird">
                     <h5>Recent Posts</h5>
@@ -152,6 +153,11 @@
                 </div>
             </div>
         </div>
+        {% else %}
+
+        {% include 'addAquarium.html' %}
+
+        {% endif %}
         <script>
             // Get the Sidebar
             var mySidebar = document.getElementById("mySidebar");

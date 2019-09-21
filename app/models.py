@@ -52,3 +52,4 @@ class AquariumData(db.Model):
 
     def __repr__(self):
         return '<aquarium {}>'.format(self.linkedAquarium.name)
+        #return '<aquarium {}>'.format(self.timestamp)
