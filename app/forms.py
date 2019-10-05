@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
+from app import images
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -37,6 +39,7 @@ class CreateAquariumForm(FlaskForm):
 class CreatePostForm(FlaskForm):
     aquariumTag = StringField('Aquarium')
     postBody = StringField("What's on your mind?", validators=[DataRequired()])
+    aquariumImage = FileField('Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
     createPost = SubmitField('Post')
 
 class CreateImagePostForm(FlaskForm):

@@ -1,4 +1,4 @@
-from app import app, db
+from app import app, db, images
 from app.models import User, Post, Aquarium, AquariumData
 from app.forms import LoginForm,RegistrationForm, CreateAquariumForm, CreatePostForm, CreateImagePostForm
 from flask import request, render_template, flash, redirect,url_for, make_response
@@ -87,9 +87,12 @@ def createAquarium():
 @login_required
 def createPost():
     postForm = CreatePostForm()
+    filename = images.save(request.files['aquariumImage'])
+    url = images.url(filename)
     a = Post (
         author = current_user,
-        body = postForm.postBody.data
+        body = postForm.postBody.data,
+        image_url = url
     )
     print('hello')
     db.session.add(a)

@@ -66,12 +66,13 @@
                 <div class="w3-col m12">
                     <div class="w3-card w3-round w3-white">
                         <div class="w3-container w3-padding">
-                            <form action="/createPost" method="POST" novalidate>
+                            <form action="/createPost" method="POST" enctype="multipart/form-data" novalidate>
                                 {{ form.hidden_tag() }}
                                 <div class = 'w3-section'>
                                     <label>{{ form.postBody.label }}</label>
                                     <p>{{ form.postBody(class_="w3-input w3-border w3-margin-bottom",placeholder="Add Post") }}</p>
                                     <p>{{ form.createPost(class="w3-button w3-block w3-green w3-section w3-padding") }}</p>
+                                    <p>{{ form.aquariumImage(class="w3-button w3-block w3-green w3-section w3-padding")}}</p>
                                     <p>{{ imageForm.createPost(class="w3-button w3-block w3-green w3-section w3-padding") }}</p>
                                 </div>
                             </form>

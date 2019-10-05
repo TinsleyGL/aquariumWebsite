@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_socketio import SocketIO, send, emit
+from flask_uploads import UploadSet, IMAGES, configure_uploads
 
 
 app = Flask(__name__,
@@ -16,6 +17,8 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 socketio = SocketIO(app)
+images = UploadSet('images', IMAGES)
+configure_uploads(app, images)
 
 from app import routes, models
 from app.websockets import (
