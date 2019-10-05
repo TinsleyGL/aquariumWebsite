@@ -34,5 +34,14 @@ class CreateAquariumForm(FlaskForm):
     targetWaterflow = StringField('Filter Flow Rate ', validators=[DataRequired()])
     createAquarium = SubmitField('Create Aquarium')
 
+class CreatePostForm(FlaskForm):
+    aquariumTag = StringField('Aquarium')
+    postBody = StringField("What's on your mind?", validators=[DataRequired()])
+    createPost = SubmitField('Post')
+
+class CreateImagePostForm(FlaskForm):
+    aquariumTag = StringField('Aquarium')
+    postBody = StringField("What's on your mind?", validators=[DataRequired()])
+    createPost = SubmitField('Post Image')
 
 

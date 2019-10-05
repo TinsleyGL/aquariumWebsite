@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 </style>
@@ -21,9 +22,10 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     <a href="{{ url_for('index') }}" class="w3-bar-item w3-button w3-padding-large">Login</a>
     {% else %}
     <a href="{{ url_for('user', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding-large">Profile</a>
+    <a href="{{ url_for('newsfeed', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding-large">Newsfeed</a>
     <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+    <span class="w3-bar-item w3-right">{{current_user.username}}</span>
     {% endif %}  
-    <span class="w3-bar-item w3-right">Logo</span>
 </div>
 {% block content %}{% endblock %}
 </body>

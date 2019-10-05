@@ -32,13 +32,13 @@
         <div class="w3-bar-block">
             <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
                 onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
-            <a href="#" class="w3-bar-item w3-button w3-padding w3-blue" onclick="myFunction('Demo1')"><i
-                    class="fa fa-users fa-fw"></i> Aquariums</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding w3-blue" onclick="myFunction('Demo1')"><i class="fas fa-fish w3-margin-right"></i>
+            </i> Aquariums <i class="fas fa-chevron-down w3-right"></i></a>
             <div id='Demo1' class="w3-hide">
                 {% if aquariumList is defined %}
                 {% for aquarium in aquariumList%}
                 <a href="{{ url_for('user1', username=current_user.username, aquarium=aquarium.name) }}"
-                    class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i class="fa fa-users fa-fw"></i>
+                    class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i class="fas fa-fish w3-margin-right"></i>
                     {{ aquarium.name }}</a>
                 {% endfor %}
                 {% else %}
@@ -46,10 +46,11 @@
                         class="fa fa-users fa-fw"></i> Add Aquarium</a>
                 {% endif %}
             </div>
-            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i> Viewers</a>
-            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Posts</a>
-            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Parameter
-                Changes</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw w3-margin-right"></i> Viewers</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw w3-margin-right"></i> Posts</a>
+            {% if aquariumList is defined %}
+            <a href="{{ url_for('analysis', username=current_user.username, aquarium=defaultAquarium.name) }}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw w3-margin-right"></i> Analysis</a>
+            {% endif %}
         </div>
     </nav>
 
