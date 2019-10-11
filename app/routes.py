@@ -10,6 +10,7 @@ from threading import Thread, Event
 from app import socketio
 from flask_socketio import send,emit
 import json
+from sqlalchemy import desc
 
 @app.route('/test')
 def test():
@@ -92,7 +93,8 @@ def createPost():
     a = Post (
         author = current_user,
         body = postForm.postBody.data,
-        image_url = url
+        image_url = url,
+        image_filename = filename
     )
     print('hello')
     db.session.add(a)
@@ -155,7 +157,7 @@ def newsfeed(username):
     form = CreatePostForm()
     imageForm = CreateImagePostForm()
     user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query.all()
+    posts = Post.query.order_by(Post.timestamp.desc())
     aquariumForm = CreateAquariumForm()
     aquariumList = user.aquariums.all()
     if len(aquariumList) == 0:

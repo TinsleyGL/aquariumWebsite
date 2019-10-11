@@ -71,9 +71,10 @@
                                 <div class = 'w3-section'>
                                     <label>{{ form.postBody.label }}</label>
                                     <p>{{ form.postBody(class_="w3-input w3-border w3-margin-bottom",placeholder="Add Post") }}</p>
-                                    <p>{{ form.createPost(class="w3-button w3-block w3-green w3-section w3-padding") }}</p>
-                                    <p>{{ form.aquariumImage(class="w3-button w3-block w3-green w3-section w3-padding")}}</p>
-                                    <p>{{ imageForm.createPost(class="w3-button w3-block w3-green w3-section w3-padding") }}</p>
+                                    <div class="w3-bar"> 
+                                        <p>{{ form.createPost(class="w3-bar-item w3-button w3-padding w3-margin-right w3-indigo w3-round-large") }}</p>
+                                        <p>{{ form.aquariumImage(class="w3-bar-item w3-button w3-padding w3-indigo w3-round-large")}}</p>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -84,24 +85,24 @@
             {% if posts %}
             {% for post in posts %}
             <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                <img src="/w3images/avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right"
+                <img src="/avatarImages/avatar.png" alt="Avatar" class="w3-left w3-circle w3-margin-right"
                     style="width:60px">
                 <span class="w3-right w3-opacity">{{ post.timestamp }}</span>
-                <h4>{{ post.author.username }}</h4>
+                <h4>{{ post.author.username }}</h4> <br>
                 <hr class="w3-clear">
                 <p>{{post.body}}</p>
+                {% if post.image_url %}
                 <div class="w3-row-padding" style="margin:0 -16px">
                     <div class="w3-half">
-                        <img src="/w3images/lights.jpg" style="width:100%" alt="Northern Lights"
+                        <img src=/postImages/{{post.image_filename}} style="width:auto; height:250px" alt="Northern Lights"
                             class="w3-margin-bottom">
                     </div>
-                    <div class="w3-half">
-                        <img src="/w3images/nature.jpg" style="width:100%" alt="Nature" class="w3-margin-bottom">
-                    </div>
                 </div>
-                <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>
+                {% endif %}
+                <hr class="w3-clear">
+                <button type="button" class="w3-button w3-indigo w3-margin-bottom w3-round-large"><i class="fa fa-thumbs-up"></i>
                     Like</button>
-                <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>
+                <button type="button" class="w3-button w3-indigo w3-margin-bottom w3-round-large"><i class="fa fa-comment"></i>
                     Comment</button>
             </div>
             {% endfor %}
