@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
 from app import images
@@ -35,6 +35,15 @@ class CreateAquariumForm(FlaskForm):
     targetPH = StringField('Regular PH', validators=[DataRequired()])
     targetWaterflow = StringField('Filter Flow Rate ', validators=[DataRequired()])
     createAquarium = SubmitField('Create Aquarium')
+
+class UpdateAquariumImageForm(FlaskForm):
+    aquariumName = StringField('Aquarium Name', validators=[DataRequired()])
+    aquariumImage = FileField('Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
+    uploadImage = SubmitField('Upload')
+
+class UpdateProfilePictureForm(FlaskForm):
+    profileImage = FileField('Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
+    uploadImage = SubmitField('Upload')
 
 class CreatePostForm(FlaskForm):
     aquariumTag = StringField('Aquarium')

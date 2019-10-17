@@ -25,7 +25,6 @@ from app.websockets import (
       handle_client_connect_event,
 )
 
-
 if __name__ == '__main__':
     socketio.run(app)
 

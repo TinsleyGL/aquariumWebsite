@@ -1,6 +1,6 @@
 from app import app, db, images
 from app.models import User, Post, Aquarium, AquariumData
-from app.forms import LoginForm,RegistrationForm, CreateAquariumForm, CreatePostForm, CreateImagePostForm
+from app.forms import LoginForm,RegistrationForm, CreateAquariumForm, CreatePostForm, CreateImagePostForm, UpdateAquariumImageForm, UpdateProfilePictureForm
 from flask import request, render_template, flash, redirect,url_for, make_response
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
@@ -96,23 +96,35 @@ def createPost():
         image_url = url,
         image_filename = filename
     )
-    print('hello')
     db.session.add(a)
     db.session.commit()
     return redirect(url_for('newsfeed', username = current_user.username))
 
-@app.route('/createImagePost', methods = ['POST', 'GET'])
+@app.route('/updateAquariumImage', methods = ['POST', 'GET'])
 @login_required
-def createImagePost():
-    postForm = CreateImagePostForm()
-    a = Post (
-        author = current_user,
-        body = postForm.postBody.data
-    )
-    print('hello')
-    db.session.add(a)
+def updateAquariumImage():
+    imageForm = UpdateAquariumImageForm()
+    filename = images.save(request.files['aquariumImage'], folder='aquariumImages/')
+    url = images.url(filename)
+    aquariumToChange = Aquarium.query.filter(Aquarium.name == imageForm.aquariumName.data ).filter(Aquarium.user_id == current_user.id).first()
+    aquariumToChange.image_filename = filename
+    aquariumToChange.image_url = url
     db.session.commit()
-    return redirect(url_for('newsfeed', username = current_user.username))
+
+    #chnage this redirect to correct aquarium
+    return redirect(url_for('user', username = current_user.username))
+
+@app.route('/updateProfileImage', methods = ['POST', 'GET'])
+@login_required
+def updateProfileImage():
+    imageForm = UpdateProfilePictureForm()
+    filename = images.save(request.files['profileImage'], folder='avatarImages/')
+    url = images.url(filename)
+    current_user.image_filename = filename
+    current_user.image_url = url
+    db.session.commit()
+    #chnage this redirect to correct aquarium
+    return redirect(url_for('user', username = current_user.username))
 
 
 @app.route('/user/<username>')
@@ -128,8 +140,10 @@ def user(username):
         defaultAquarium = aquariumList[0]
         defaultAquariumDataFile = defaultAquarium.data
         defaultAquariumDataOrdered = defaultAquariumDataFile.order_by(AquariumData.timestamp.desc()).first()
+        imageForm = UpdateAquariumImageForm()
+        profileImageForm = UpdateProfilePictureForm()
         return render_template('user.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
-            defaultAquariumDataOrdered=defaultAquariumDataOrdered)
+            defaultAquariumDataOrdered=defaultAquariumDataOrdered, imageForm=imageForm, profileImageForm = profileImageForm)
 
 @app.route('/user/<username>/<aquarium>')
 @login_required
@@ -140,8 +154,10 @@ def user1(username, aquarium):
     defaultAquarium = Aquarium.query.filter(Aquarium.name == aquarium ).filter(Aquarium.user_id == user.id).first()
     defaultAquariumDataFile = defaultAquarium.data
     defaultAquariumDataOrdered = defaultAquariumDataFile.order_by(AquariumData.timestamp.desc()).first()
+    imageForm = UpdateAquariumImageForm()
+    profileImageForm = UpdateProfilePictureForm()
     return render_template('user.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
-        defaultAquariumDataOrdered=defaultAquariumDataOrdered)
+        defaultAquariumDataOrdered=defaultAquariumDataOrdered, imageForm=imageForm, profileImageForm = profileImageForm)
     
 @app.route('/user/<username>/<aquarium>/analysis')
 @login_required
