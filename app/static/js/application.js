@@ -5,7 +5,7 @@ socket.on('connect', function() {
 });
 
 function sendData(){
-    socket.emit('sendData', {data: 'hello'});
+    socket.emit('sendData', {data: 'Request'});
 };
 setInterval(sendData,5000)
 

@@ -6,31 +6,37 @@
 <header class="w3-container w3-indigo w3-center" style="padding:128px 16px">
     <h1 class="w3-margin w3-jumbo">AquaLogger</h1>
     <p class="w3-xlarge"></p>
-    <button onclick="document.getElementById('id01').style.display='block'"
-        class="w3-button w3-green w3-large">Login</button>
-    <button onclick="document.getElementById('id02').style.display='block'"
-        class="w3-button w3-green w3-large">Register</button>
-    
-    <!-- login modal -->    
+
+    <div class="w3-bar" style="width:100%">
+        <button onclick="document.getElementById('id01').style.display='block'"
+            class="w3-button w3-light-gray w3-large w3-round-xlarge w3-margin-right" style='width:10%'>Login</button>
+        <button onclick="document.getElementById('id02').style.display='block'"
+            class="w3-button w3-light-gray w3-large w3-round-xlarge w3-margin-left" style='width:10%'>Register</button>
+    </div>
+    <!-- login modal -->
+    {% with loginErrors = get_flashed_messages(category_filter=["loginError"]) %}
+    {% if loginErrors %}
+    <div id="id01" class="w3-modal w3-text-black" style="display: block">
+    {% else %}
     <div id="id01" class="w3-modal w3-text-black">
+    {% endif %}
         <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
             <div class="w3-center"><br>
                 <span onclick="document.getElementById('id01').style.display='none'"
                     class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
-                    <i class="w3-margin-top fas fa-user-plus fa-7x"></i>
+                <i class="w3-margin-top fas fa-user-plus fa-7x"></i>
             </div>
             <form id='loginFormSection' class='w3-container' method="post" novalidate>
                 {{ form.hidden_tag() }}
                 <div class="w3-section">
                     <label> {{ form.username.label }}</label>
-                    <p>{{ form.username(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Username") }}</p>
-                    {% for error in form.username.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
+                    <p>{{ form.username(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Username") }}
+                    </p>
                     <label> {{form.password.label }}</label>
-                    <p>{{ form.password(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Password") }}</p>
-                    {% for error in form.password.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                    <p>{{ form.password(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Password") }}
+                    </p>
+                    {% for msg in loginErrors %}
+                    <span style="color: red;">[{{ msg }}]</span>
                     {% endfor %}
                     <p>{{ form.userLogin(class="w3-button w3-block w3-green w3-section w3-padding") }}</p>
                     <p>{{ form.remember_me(class="w3-check w3-margin-top") }} {{ form.remember_me.label }}</p>
@@ -39,7 +45,8 @@
             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                 <button onclick="document.getElementById('id01').style.display='none'" type="button"
                     class="w3-button w3-red">Cancel</button>
-                <span class="w3-right w3-padding w3-hide-small">Forgot <a href='#' onclick="forgotPassword()">password?</a></span>
+                <span class="w3-right w3-padding w3-hide-small">Forgot <a href='#'
+                        onclick="forgotPassword()">password?</a></span>
             </div>
         </div>
         <div id='forgotPassword' class='w3-container' style='display: none;'>
@@ -50,59 +57,41 @@
             </div>
         </div>
     </div>
+    {% endwith %}
 
-    <!-- Register modal -->    
+    <!-- Register modal -->
+    {% with registrationErrors = get_flashed_messages(category_filter=["regError"]) %}
+    {% if registrationErrors %}
+    <div id="id02" class="w3-modal w3-text-black" style="display: block">
+    {% else %}
     <div id="id02" class="w3-modal w3-text-black">
+    {% endif %}
         <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
             <div class="w3-center"><br>
                 <span onclick="document.getElementById('id02').style.display='none'"
                     class="w3-button w3-xlarge w3-hover-red w3-display-topright" title="Close Modal">&times;</span>
-                    <i class="w3-margin-top fas fa-user-plus fa-7x"></i>
+                <i class="w3-margin-top fas fa-user-plus fa-7x"></i>
             </div>
             <form class='w3-container' method="post" novalidate>
                 {{ regForm.hidden_tag() }}
                 <div class="w3-section">
                     <label> {{ regForm.username.label }}</label>
                     <p>{{ regForm.username(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Username") }}
-                        {% for error in regForm.username.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
                     </p>
                     <label> {{regForm.email.label }}</label>
                     <p>{{ regForm.email(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Email") }}
-                        {% for error in regForm.email.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
                     </p>
                     <label> {{regForm.password.label }}</label>
                     <p>{{ regForm.password(class_="w3-input w3-border w3-margin-bottom",placeholder="Enter Password") }}
-                        {% for error in regForm.password.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
                     </p>
                     <label> {{regForm.password2.label }}</label>
                     <p>{{ regForm.password2(class_="w3-input w3-border w3-margin-bottom",placeholder="Confirm Password") }}
-                        {% for error in regForm.password2.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
+                        {% for msg in registrationErrors %}
+                        <span style="color: red;">[{{ msg }}]</span>
                         {% endfor %}
                     </p>
-                    <p>{{ regForm.register(class="w3-button w3-block w3-green w3-section w3-padding",onclick="document.getElementById('id03').style.display='block'") }}</p>
-                    <div id="id03" class="w3-modal">
-                            <div class="w3-modal-content w3-card-4">
-                              <header class="w3-container w3-teal"> 
-                                <span onclick="document.getElementById('id01').style.display='none'" 
-                                class="w3-button w3-display-topright">&times;</span>
-                                <h2>Modal Header</h2>
-                              </header>
-                              <div class="w3-container">
-                                <p>Some text..</p>
-                                <p>Some text..</p>
-                              </div>
-                              <footer class="w3-container w3-teal">
-                                <p>Modal Footer</p>
-                              </footer>
-                            </div>
-                          </div>
+                    <p>{{ regForm.register(class="w3-button w3-block w3-green w3-section w3-padding",onclick="document.getElementById('id03').style.display='block'") }}
+                    </p>
                 </div>
             </form>
             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
@@ -113,6 +102,8 @@
 
         </div>
     </div>
+    {% endwith %}
+
 
 </header>
 
@@ -184,8 +175,8 @@
 
 <script>
     function forgotPassword() {
-        document.getElementById('loginFormSection').style.display='none';
-        document.getElementById('forgotPassword').style.display='block';
+        document.getElementById('loginFormSection').style.display = 'none';
+        document.getElementById('forgotPassword').style.display = 'block';
     }
 
 </script>

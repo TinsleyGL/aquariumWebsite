@@ -13,11 +13,9 @@ socket.on('returnAnalysisData', function (data) {
         if (document.getElementById(a + "Analysis")) {
             var dt = new Date()
             var newLabel = String(dt.getHours()) + ':' + String(dt.getMinutes()) + ':' + String(dt.getSeconds())
-            var randomValue = Math.floor((Math.random() * 10) + 1)
             var labelLength = tempChart.data.labels
-
-            addData(tempChart, newLabel, randomValue)
-            addData(phChart, newLabel, randomValue)
+            addData(tempChart, newLabel, data[a].temp)
+            addData(phChart, newLabel, data[a].ph)
             if (labelLength.length > 6 ) {
                 removeData(tempChart)
                 removeData(phChart)
@@ -95,7 +93,6 @@ function addData(chart, label, data) {
         dataset.data.push(data);
     });
     chart.update();
-    console.log('chart updated')
 }
 
 function removeData(c) {
@@ -109,7 +106,7 @@ function removeData(c) {
 //
 // functions for swapping tabs
 //
-function openCity(evt, cityName) {
+function changeTab(evt, tabName) {
     var i, x, tablinks;
     x = document.getElementsByClassName("dataSection");
     for (i = 0; i < x.length; i++) {
@@ -119,7 +116,7 @@ function openCity(evt, cityName) {
     for (i = 0; i < x.length; i++) {
       tablinks[i].className = tablinks[i].className.replace(" w3-border-red", "");
     }
-    document.getElementById(cityName).style.display = "block";
+    document.getElementById(tabName).style.display = "block";
     evt.currentTarget.firstElementChild.className += " w3-border-red";
   }
 

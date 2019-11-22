@@ -22,13 +22,17 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user is not None:
-            raise ValidationError('Please use a different username.')
+            return False
+        else:
+            return True
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
-            raise ValidationError('Please use a different email address.')
-
+            return False
+        else:
+            return True
+            
 class CreateAquariumForm(FlaskForm):
     aquariumName = StringField('Aquarium Name', validators=[DataRequired()])
     targetTemp = StringField('Regular Temperature',validators=[DataRequired()])
@@ -46,7 +50,6 @@ class UpdateProfilePictureForm(FlaskForm):
     uploadImage = SubmitField('Upload')
 
 class CreatePostForm(FlaskForm):
-    aquariumTag = StringField('Aquarium')
     postBody = StringField("What's on your mind?", validators=[DataRequired()])
     aquariumImage = FileField('Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
     createPost = SubmitField('Post')

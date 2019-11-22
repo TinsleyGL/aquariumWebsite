@@ -17,12 +17,9 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
 <!-- Top container -->
 <div class="w3-bar w3-top w3-indigo w3-large" style="z-index:4">
-    <!-- <a href="{{ url_for('index') }}" class="w3-bar-item w3-button w3-padding-large">Home</a> -->
     {% if current_user.is_anonymous %}
-    <a href="{{ url_for('index') }}" class="w3-bar-item w3-button w3-padding-large">Login</a>
+    <span class="w3-bar-item w3-left">Welcome</span>
     {% else %}
-    <a href="{{ url_for('user', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding-large">Profile</a>
-    <a href="{{ url_for('newsfeed', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding-large">Newsfeed</a>
     <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
     <span class="w3-bar-item w3-right">{{current_user.username}}</span>
     {% endif %}  

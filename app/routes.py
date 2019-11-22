@@ -18,15 +18,16 @@ def test():
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-#@login_required
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('user', username=current_user.username))
+
     form = LoginForm()
     regForm = RegistrationForm()
-
     if form.validate_on_submit() and form.userLogin.data:
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash(u'Invalid username or password', 'loginError')
             return redirect(url_for('index'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -34,17 +35,37 @@ def index():
             next_page = url_for('user', username=current_user.username)
         return redirect(next_page)
     elif regForm.validate_on_submit() and regForm.register.data:
-        user = User(username=regForm.username.data, email=regForm.email.data)
-        user.set_password(regForm.password.data)
-        db.session.add(user)
-        db.session.commit()
-
+        if regForm.validate_username(regForm.username) == False:
+            flash(u'Please use a different username.', 'regError')
+            return redirect(url_for('index'))
+        elif regForm.validate_email(regForm.email) == False:
+            flash(u'Please use a different email address.', 'regError')
+            return redirect(url_for('index'))
+        else:
+            user = User(username=regForm.username.data, email=regForm.email.data)
+            user.set_password(regForm.password.data)
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            return redirect(url_for('user', username=current_user.username))
     return render_template('index.html', title='Home', form=form, regForm=regForm)
 
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+#test data incoming from raspberry pi, wont affect database
+@app.route('/testData', methods=['GET','POST'])
+def testdata():
+    print (
+        request.form.get('UserID'),
+        request.form.get('Aquarium'),
+        request.form.get('Temperature'),
+        request.form.get('PH'),
+    )
+    return ('success')
+
 
 @app.route('/data', methods=['GET','POST'])
 def receive_data():
@@ -88,14 +109,20 @@ def createAquarium():
 @login_required
 def createPost():
     postForm = CreatePostForm()
-    filename = images.save(request.files['aquariumImage'])
-    url = images.url(filename)
-    a = Post (
-        author = current_user,
-        body = postForm.postBody.data,
-        image_url = url,
-        image_filename = filename
-    )
+    if request.files['aquariumImage']:
+        filename = images.save(request.files['aquariumImage'], folder='postImages/')
+        url = images.url(filename)
+        a = Post (
+            author = current_user,
+            body = postForm.postBody.data,
+            image_url = url,
+            image_filename = filename
+        )
+    else:
+        a = Post (
+            author = current_user,
+            body = postForm.postBody.data
+        )
     db.session.add(a)
     db.session.commit()
     return redirect(url_for('newsfeed', username = current_user.username))
@@ -171,10 +198,18 @@ def analysis(username, aquarium):
 @login_required
 def newsfeed(username):
     form = CreatePostForm()
-    imageForm = CreateImagePostForm()
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.order_by(Post.timestamp.desc())
-    aquariumForm = CreateAquariumForm()
+    aquariumList = user.aquariums.all()
+    defaultAquarium = aquariumList[0]
+    return render_template('newsfeed.html', user=user, posts=posts, aquariumList=aquariumList,
+        form=form, defaultAquarium=defaultAquarium)
+
+@app.route('/user/<username>/yourPosts')
+@login_required
+def yourPosts(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = user.posts.order_by(Post.timestamp.desc())
     aquariumList = user.aquariums.all()
     if len(aquariumList) == 0:
         return render_template('user.html', user=user, posts=posts, aquariumForm=aquariumForm)
@@ -182,8 +217,23 @@ def newsfeed(username):
         defaultAquarium = aquariumList[0]
         defaultAquariumDataFile = defaultAquarium.data
         defaultAquariumDataOrdered = defaultAquariumDataFile.order_by(AquariumData.timestamp.desc()).first()
-        return render_template('newsfeed.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
-            defaultAquariumDataOrdered=defaultAquariumDataOrdered, form=form, imageForm=imageForm)
+        return render_template('yourPosts.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
+            defaultAquariumDataOrdered=defaultAquariumDataOrdered)
+
+@app.route('/user/<username>/followedUsers')
+@login_required
+def followedUsers(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = user.followed_posts().all()
+    aquariumList = user.aquariums.all()
+    if len(aquariumList) == 0:
+        return render_template('user.html', user=user, posts=posts, aquariumForm=aquariumForm)
+    else:    
+        defaultAquarium = aquariumList[0]
+        defaultAquariumDataFile = defaultAquarium.data
+        defaultAquariumDataOrdered = defaultAquariumDataFile.order_by(AquariumData.timestamp.desc()).first()
+        return render_template('followedUsers.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
+            defaultAquariumDataOrdered=defaultAquariumDataOrdered)
 
 @socketio.on('client_connected')
 def handle_client_connect_event(json):
@@ -199,7 +249,6 @@ def handle(json):
             'ph': a.first().ph
         }
         jsonFile[aquariums.name] = dict
-    print (jsonFile)
     emit('data', jsonFile
     )
 
