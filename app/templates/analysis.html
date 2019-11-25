@@ -7,17 +7,22 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="">
+
 </head>
 
 <body class="w3-light-grey">
     {% extends "base.html" %}
     {% block content %}
-    <!-- Sidebar/menu -->
 
+    <!-- Sidebar/menu -->
     {% include 'sidebar.html' %}
 
-
     {% if aquariumList is defined %}
+    <!-- weekly chart data passed from template, accessed here to make available in analysis.js file -->
+    <div id="mydiv1" data-data1='{{ weeklyChartData|tojson }}'></div>
+    <div id="mydiv2" data-data2='{{ monthlyChartData|tojson }}'></div>
+    <div id="mydiv3" data-data3='{{ yearlyChartData|tojson }}'></div>
+
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
@@ -30,57 +35,103 @@
             <div class="w3-container w3-margin-bottom w3-center" style='width:60%; margin:auto;'>
                 <div class="w3-row">
                     <a href="javascript:void(0)" onclick="changeTab(event, 'liveData');">
-                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Live data</div>
+                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding w3-border-indigo">Live data</div>
                     </a>
-                    <a href="javascript:void(0)" onclick="changeTab(event, 'daily');">
-                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Daily</div>
+                    <a href="javascript:void(0)" onclick="changeTab(event, 'week');">
+                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Week</div>
                     </a>
-                    <a href="javascript:void(0)" onclick="changeTab(event, 'weekly');">
-                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Weekly</div>
+                    <a href="javascript:void(0)" onclick="changeTab(event, 'month');">
+                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Month</div>
                     </a>
-                    <a href="javascript:void(0)" onclick="changeTab(event, 'monthly');">
-                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Monthly</div>
+                    <a href="javascript:void(0)" onclick="changeTab(event, 'year');">
+                        <div class="w3-quarter tablink w3-bottombar w3-hover-light-grey w3-padding">Year</div>
                     </a>
                 </div>
             </div>
         </div>
 
         <!-- Live data anaysis section for aquariums -->
-        <div id='liveData' class='dataSection w3-padding'>
-            <div class="w3-row-padding w3-margin-bottom w3-margin">
-                <div class="w3-half">
+        <div id='liveData' class='dataSection'>
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
                     <canvas id="temperatureChart"></canvas>
                 </div>
-
-                <div class="w3-half">
+                <div class="w3-col s6 w3-center">
                     <canvas id="phChart"></canvas>
                 </div>
             </div>
 
-            <div class="w3-row-padding w3-margin-bottom w3-margin">
-                <div class="w3-half">
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
                     <canvas id="wfChart"></canvas>
                 </div>
-
-                <div class="w3-half">
+                <div class="w3-col s6 w3-center">
                     <canvas id="clarityChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Daily data average analysis section for aquariums -->
-        <div id='daily' class="dataSection" style="display:none;">
-            <p>hello</p>
+        <!-- week data average analysis section for aquariums -->
+        <div id='week' class="dataSection" style="display:none;">
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
+                    <canvas id="temperatureWeeklyChart"></canvas>
+                </div>
+                <div class="w3-col s6 w3-center">
+                    <canvas id="phWeeklyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
+                    <canvas id="wfWeeklyChart"></canvas>
+                </div>
+                <div class="w3-col s6 w3-center">
+                    <canvas id="clarityWeeklyChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <!-- Weekly data average analysis section for aquariums -->
-        <div id='weekly' class="dataSection" style="display:none;">
-            <p>hello</p>
+        <!-- month data average analysis section for aquariums -->
+        <div id='month' class="dataSection" style="display:none;">
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
+                    <canvas id="temperatureMonthlyChart"></canvas>
+                </div>
+                <div class="w3-col s6 w3-center">
+                    <canvas id="phMonthlyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
+                    <canvas id="wfMonthlyChart"></canvas>
+                </div>
+                <div class="w3-col s6 w3-center">
+                    <canvas id="clarityMonthlyChart"></canvas>
+                </div>
+            </div>
         </div>
 
-        <!-- Monthly data average analysis section for aquariums -->
-        <div id='monthly' class="dataSection" style="display:none;">
-            <p>hello</p>
+        <!-- year data average analysis section for aquariums -->
+        <div id='year' class="dataSection" style="display:none;">
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
+                    <canvas id="temperatureYearlyChart"></canvas>
+                </div>
+                <div class="w3-col s6 w3-center">
+                    <canvas id="phYearlyChart"></canvas>
+                </div>
+            </div>
+
+            <div class="w3-row-padding">
+                <div class="w3-col s6 w3-center">
+                    <canvas id="wfYearlyChart"></canvas>
+                </div>
+                <div class="w3-col s6 w3-center">
+                    <canvas id="clarityYearlyChart"></canvas>
+                </div>
+            </div>
         </div>
 
     </div>

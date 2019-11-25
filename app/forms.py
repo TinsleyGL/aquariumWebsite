@@ -32,12 +32,13 @@ class RegistrationForm(FlaskForm):
             return False
         else:
             return True
-            
+
 class CreateAquariumForm(FlaskForm):
     aquariumName = StringField('Aquarium Name', validators=[DataRequired()])
     targetTemp = StringField('Regular Temperature',validators=[DataRequired()])
     targetPH = StringField('Regular PH', validators=[DataRequired()])
     targetWaterflow = StringField('Filter Flow Rate ', validators=[DataRequired()])
+    targetClarity = StringField('Water clarity ', validators=[DataRequired()])
     createAquarium = SubmitField('Create Aquarium')
 
 class UpdateAquariumImageForm(FlaskForm):
@@ -54,9 +55,5 @@ class CreatePostForm(FlaskForm):
     aquariumImage = FileField('Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
     createPost = SubmitField('Post')
 
-class CreateImagePostForm(FlaskForm):
-    aquariumTag = StringField('Aquarium')
-    postBody = StringField("What's on your mind?", validators=[DataRequired()])
-    createPost = SubmitField('Post Image')
 
 

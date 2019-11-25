@@ -17,20 +17,23 @@
     {% include 'sidebar.html' %}
 
     {% if aquariumList is defined %}
+
     <!-- Middle Column -->
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
-        <div class="w3-row-padding" style="padding-top:22px">
-
+        <header class="w3-container" style="padding-top:22px">
+            <h5><b><i class="fa fa-dashboard"></i>Followed Users</b></h5>
+        </header>
+        <div class="w3-row-padding" style="padding-top:10px">
             {% if posts %}
             {% for post in posts %}
             <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                {% if user.image_filename %}
-                <img src="/images/{{ user.image_filename }}" alt="" class="w3-left w3-circle w3-margin-right"
+                {% if post.author.image_filename %}
+                <img src="/images/{{ post.author.image_filename }}" alt="" class="w3-left w3-circle w3-margin-right"
                     style="width:60px">
                 {% else %}
                 <img src="/images/avatarImages/avatar.png" class="w3-left w3-circle w3-margin-right" style="width:60px">
                 {% endif %}
-                <span class="w3-right w3-opacity">{{ post.timestamp }}</span>
+                <span class="w3-right w3-opacity">{{ post.readDate()}} {{ post.readTime()}}</span>
                 <h4>{{ post.author.username }}</h4> <br>
                 <hr class="w3-clear">
                 <p>{{post.body}}</p>
@@ -43,13 +46,15 @@
                 </div>
                 {% endif %}
                 <hr class="w3-clear">
+                <a href="{{ url_for('unfollowUser', username=post.author.username) }}"
+                    class="w3-button w3-indigo w3-margin-bottom w3-round-large">Unfollow</a>
             </div>
             {% endfor %}
             {% endif %}
         </div>
         <!-- End Middle Column -->
 
-        
+
     </div>
     {% endif %}
     <script>

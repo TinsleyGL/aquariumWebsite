@@ -17,7 +17,11 @@
 
     {% include 'sidebar.html' %}
 
-    {% if aquariumList is defined %}
+    {% if addAquariumCheck is defined %}
+
+    {% include 'addAquarium.html' %}
+
+    {% elif aquariumList is defined %}
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
 
@@ -51,7 +55,7 @@
                 <div class="w3-container w3-indigo w3-padding-16">
                     <div class="w3-left"><i class="fas fa-water w3-xxxlarge"></i></div>
                     <div class="w3-right">
-                        <h3>75%</h3>
+                        <h3 id="{{ defaultAquarium.name }}FilterFlow">{{ defaultAquariumDataOrdered.filterFlow }}</h3>
                     </div>
                     <div class="w3-clear"></div>
                     <h4>Filter Flow</h4>
@@ -61,7 +65,7 @@
                 <div class="w3-container w3-indigo w3-padding-16">
                     <div class="w3-left"><i class="fas fa-tint w3-xxxlarge"></i></div>
                     <div class="w3-right">
-                        <h3>90%</h3>
+                        <h3 id="{{ defaultAquarium.name }}Clarity">{{ defaultAquariumDataOrdered.waterClarity }}</h3>
                     </div>
                     <div class="w3-clear"></div>
                     <h4>Water Clarity</h4>
@@ -90,9 +94,9 @@
                     <!-- Modal for updating your aquarium image -->
                     <div id="id01" class="w3-modal">
                         <div class="w3-modal-content w3-card-4 w3-animate-zoom">
-                            <header class="w3-container w3-blue">
+                            <header class="w3-container w3-indigo">
                                 <span onclick="document.getElementById('id01').style.display='none'"
-                                    class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
+                                    class="w3-button w3-indigo w3-xlarge w3-display-topright">&times;</span>
                                 <h2>Your Aquarium</h2>
                             </header>
 
@@ -133,54 +137,7 @@
                         </div>
                     </div>
 
-                    <!-- Modal for updating your profile image -->
-                    <div id="id02" class="w3-modal">
-                        <div class="w3-modal-content w3-card-4 w3-animate-zoom">
-                            <header class="w3-container w3-blue">
-                                <span onclick="document.getElementById('id02').style.display='none'"
-                                    class="w3-button w3-blue w3-xlarge w3-display-topright">&times;</span>
-                                <h2>Profile Picture</h2>
-                            </header>
 
-                            <div class="w3-bar w3-border-bottom">
-                                <button class="tablink w3-bar-item w3-button"
-                                    onclick="openCity(event, 'currentProfileImage')">Current Profile Picture</button>
-                                <button class="tablink w3-bar-item w3-button"
-                                    onclick="openCity(event, 'changeProfileImage')">Change Profile Picture</button>
-                            </div>
-
-                            <div id="currentProfileImage" class="w3-container city">
-                                {% if user.image_filename %}
-                                <img src="/images/{{ user.image_filename }}" class="w3-circle w3-margin-right"
-                                    style="width:600px;height:auto">
-                                {% else %}
-                                <img src="/images/avatarImages/avatar.png" class="w3-circle w3-margin-right"
-                                    style="width:600px;height:auto">
-                                {% endif %}
-                            </div>
-
-                            <div id="changeProfileImage" class="w3-container city">
-                                <form action="/updateProfileImage" method="POST" enctype="multipart/form-data"
-                                    novalidate>
-                                    {{ profileImageForm.hidden_tag() }}
-                                    <div class='w3-section'>
-                                        <div class="w3-bar">
-                                            <p>{{ profileImageForm.uploadImage(class="w3-bar-item w3-button w3-padding w3-margin-right w3-indigo w3-round-large") }}
-                                            </p>
-                                            <p>{{ profileImageForm.profileImage(class="w3-bar-item w3-button w3-padding w3-indigo w3-round-large")}}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="w3-container w3-light-grey w3-padding">
-                                <button class="w3-button w3-right w3-white w3-border"
-                                    onclick="document.getElementById('id02').style.display='none'">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End of modal for updating your profile image -->
                 </div>
                 <div class="w3-twothird">
                     <h5>Latest comments</h5>
@@ -223,6 +180,35 @@
                     </table>
                 </div>
             </div>
+
+            <div class="w3-panel">
+                <div class="w3-row-padding" style="margin:0 -16px">
+                    <a onclick="document.getElementById('deleteAquariumModal').style.display='block'" href="#"
+                        class="w3-button w3-indigo w3-margin-bottom w3-round-large">Delete Aquarium?</a>
+                </div>
+            </div>
+
+            <div id="deleteAquariumModal" class="w3-modal">
+                <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+                    <header class="w3-container w3-indigo">
+                        <span onclick="document.getElementById('deleteAquariumModal').style.display='none'"
+                            class="w3-button w3-indigo w3-xlarge w3-display-topright">&times;</span>
+                        <h2>Delete Aquarium</h2>
+                    </header>
+
+                    <div class="w3-container w3-center">
+                        <p>Are you sure?</p>
+                        <a href="{{ url_for('deleteAquarium', aquarium=defaultAquarium.id) }}" 
+                            class="w3-button w3-indigo w3-margin-bottom w3-round-large" style="width: 25%">Yes</a>
+                    </div>
+
+                    <div class="w3-container w3-light-grey w3-padding">
+                        <button class="w3-button w3-right w3-white w3-border"
+                            onclick="document.getElementById('deleteAquariumModal').style.display='none'">Close</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         {% else %}
 

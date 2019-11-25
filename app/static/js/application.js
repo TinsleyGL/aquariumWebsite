@@ -13,13 +13,15 @@ socket.on('data' ,function(data){
     for (a in data) {
         if (document.getElementById(a + "temperature")) {
             document.getElementById(a + "temperature").innerHTML = data[a].temp;
-            console.log(a)
-            console.log(data[a].temp)
         }
         if (document.getElementById(a + "ph")) {
             document.getElementById(a + "ph").innerHTML = data[a].ph;
-            console.log(a)
-            console.log(data[a].ph)
+        }
+        if (document.getElementById(a + "FilterFlow")) {
+            document.getElementById(a + "FilterFlow").innerHTML = data[a].filterFlow;
+        }
+        if (document.getElementById(a + "Clarity")) {
+            document.getElementById(a + "Clarity").innerHTML = data[a].clarity;
         }
     }
 });

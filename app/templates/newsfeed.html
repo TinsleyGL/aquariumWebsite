@@ -12,62 +12,76 @@
 <body class="w3-light-grey">
     {% extends "base.html" %}
     {% block content %}
-    
+
     <!-- Sidebar/menu -->
     {% include 'sidebar.html' %}
 
     {% if aquariumList is defined %}
     <!-- Middle Column -->
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
-            <div class="w3-row-padding" style="padding-top:22px">
-                <div class="w3-col m12">
-                    <div class="w3-card w3-round w3-white">
-                        <div class="w3-container w3-padding">
-                            <form action="/createPost" method="POST" enctype="multipart/form-data" novalidate>
-                                {{ form.hidden_tag() }}
-                                <div class = 'w3-section'>
-                                    <label>{{ form.postBody.label }}</label>
-                                    <p>{{ form.postBody(class="w3-input w3-border w3-margin-bottom",placeholder="Add Post") }}</p>
-                                    <div class="w3-bar"> 
-                                        <p>{{ form.createPost(class="w3-bar-item w3-button w3-padding w3-margin-right w3-indigo w3-round-large") }}</p>
-                                        <p>{{ form.aquariumImage(class="w3-bar-item w3-button w3-padding w3-indigo w3-round-large")}}</p>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {% if posts %}
-            {% for post in posts %}
-            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
-                {% if user.image_filename %}
-                <img src="/images/{{ user.image_filename }}" alt="" class="w3-left w3-circle w3-margin-right" style="width:60px" >
-                {% else %}
-                <img src="/images/avatarImages/avatar.png" class="w3-left w3-circle w3-margin-right" style="width:60px">
-                {% endif %}
-                <span class="w3-right w3-opacity">{{ post.readDate()}} {{ post.readTime()}}</span>
-                <h4>{{ post.author.username }}</h4> <br>
-                <hr class="w3-clear">
-                <p>{{post.body}}</p>
-                {% if post.image_url %}
-                <div class="w3-row-padding" style="margin:0 -16px">
-                    <div class="w3-half">
-                        <img src=/images/{{post.image_filename}} style="width:auto; height:250px" alt="Northern Lights"
-                            class="w3-margin-bottom">
+        <header class="w3-container" style="padding-top:22px">
+            <h5><b><i class="fa fa-dashboard"></i>Newsfeed</b></h5>
+        </header>
+        <div class="w3-row-padding" style="padding-top:10px">
+            <div class="w3-col m12">
+                <div class="w3-card w3-round w3-white">
+                    <div class="w3-container w3-padding">
+                        <form action="/createPost" method="POST" enctype="multipart/form-data" novalidate>
+                            {{ form.hidden_tag() }}
+                            <div class='w3-section'>
+                                <label>{{ form.postBody.label }}</label>
+                                <p>{{ form.postBody(class="w3-input w3-border w3-margin-bottom",placeholder="Add Post") }}
+                                </p>
+                                <div class="w3-bar">
+                                    <p>{{ form.createPost(class="w3-bar-item w3-button w3-padding w3-margin-right w3-indigo w3-round-large") }}
+                                    </p>
+                                    <p>{{ form.aquariumImage(class="w3-bar-item w3-button w3-padding w3-indigo w3-round-large")}}
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                {% endif %}
-                <hr class="w3-clear">
-                <button type="button" class="w3-button w3-indigo w3-margin-bottom w3-round-large"><i class="fa fa-thumbs-up"></i>
-                    Like</button>
-                <button type="button" class="w3-button w3-indigo w3-margin-bottom w3-round-large"><i class="fa fa-comment"></i>
-                    Comment</button>
             </div>
-            {% endfor %}
+        </div>
+
+        {% if posts %}
+        {% for post in posts %}
+        <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+            {% if post.author.image_filename %}
+            <img src="/images/{{ post.author.image_filename }}" alt="" class="w3-left w3-circle w3-margin-right"
+                style="width:60px">
+            {% else %}
+            <img src="/images/avatarImages/avatar.png" class="w3-left w3-circle w3-margin-right" style="width:60px">
             {% endif %}
-            <!-- End Middle Column -->
+            <span class="w3-right w3-opacity">{{ post.readDate()}} {{ post.readTime()}}</span>
+            <h4>{{ post.author.username }}</h4> <br>
+            <hr class="w3-clear">
+            <p>{{post.body}}</p>
+            {% if post.image_url %}
+            <div class="w3-row-padding" style="margin:0 -16px">
+                <div class="w3-half">
+                    <img src=/images/{{post.image_filename}} style="width:auto; height:250px" alt="Northern Lights"
+                        class="w3-margin-bottom">
+                </div>
+            </div>
+            {% endif %}
+            <hr class="w3-clear">
+            {% if post.author == current_user %}
+            <a href="{{ url_for('deletePost', post = post.id) }}"
+                class="w3-button w3-indigo w3-margin-bottom w3-round-large">Delete Post?</a>
+            {% elif not current_user.is_following(post.author) %}
+            <a href="{{ url_for('followUser', username=post.author.username) }}"
+                class="w3-button w3-indigo w3-margin-bottom w3-round-large">Follow</a>
+            {% elif current_user.is_following(post.author) %}
+            <a href="{{ url_for('unfollowUser', username=post.author.username) }}"
+                class="w3-button w3-indigo w3-margin-bottom w3-round-large">Unfollow</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+        <!-- End Middle Column -->
     </div>
     {% endif %}
     <script>

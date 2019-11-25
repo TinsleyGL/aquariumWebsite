@@ -2,7 +2,7 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import statistics
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 @login.user_loader
@@ -91,6 +91,10 @@ class Aquarium(db.Model):
     image_filename = db.Column(db.String, default=None, nullable=True)
     image_url = db.Column(db.String, default=None, nullable=True)
     data = db.relationship('AquariumData', backref='linkedAquarium', lazy='dynamic')
+    targetTemperature = db.Column(db.Integer)
+    targetPH = db.Column(db.Integer)
+    targetWaterflow = db.Column(db.Integer)
+    targetClarity = db.Column(db.Integer)
 
     #
     #functions for returning averages for analysis
@@ -99,18 +103,20 @@ class Aquarium(db.Model):
         list = []
         try:
             for d in self.data:
-                if d.timestamp.day == value and param == 'ph':
+                if d.timestamp == value and param == 'ph':
                     list.append(int(d.ph))
-                elif d.timestamp.day == value and param == 'temp':
+                elif d.timestamp == value and param == 'temp':
                     list.append(int(d.temperature))
-                elif d.timestamp.day == value and param == 'flow':
-                    list.append(int(d.ph))
-                elif d.timestamp.day == value and param == 'clarity':
-                    list.append(int(d.ph))
+                elif d.timestamp == value and param == 'flow':
+                    list.append(int(d.filterFlow))
+                elif d.timestamp == value and param == 'clarity':
+                    list.append(int(d.waterClarity))
+            mean = (statistics.mean(list))
+            return mean
         except:
-            print("An exception occurred")
-        mean = (statistics.mean(list))
-        return mean
+            pass
+            #print("An exception occurred")
+            return 1
 
     def monthAverage(self, value, param):
         list = []
@@ -121,13 +127,15 @@ class Aquarium(db.Model):
                 elif d.timestamp.month == value and param == 'temp':
                     list.append(int(d.temperature))
                 elif d.timestamp.month == value and param == 'flow':
-                    list.append(int(d.ph))
+                    list.append(int(d.filterFlow))
                 elif d.timestamp.month == value and param == 'clarity':
-                    list.append(int(d.ph))
+                    list.append(int(d.waterClarity))
+            mean = (statistics.mean(list))
+            return mean
         except:
-            print("An exception occurred")
-        mean = (statistics.mean(list))
-        return mean
+            pass
+            #print("An exception occurred")
+        return 1
 
     def yearAverage(self, value, param):
         list = []
@@ -138,13 +146,63 @@ class Aquarium(db.Model):
                 elif d.timestamp.year == value and param == 'temp':
                     list.append(int(d.temperature))
                 elif d.timestamp.year == value and param == 'flow':
-                    list.append(int(d.ph))
+                    list.append(int(d.filterFlow))
                 elif d.timestamp.year == value and param == 'clarity':
-                    list.append(int(d.ph))
+                    list.append(int(d.waterClarity))
         except:
-            print("An exception occurred")
+            pass
+            #print("An exception occurred")
         mean = (statistics.mean(list))
         return mean
+
+
+    #dataType should be temp,ph,waterflow,clarity 
+    def weekChartData(self, *args):
+        jsonFile = {"ph":{"Sunday":0,"Monday":0,"Tuesday":0,"Wednesday":0,"Thursday":0,"Friday":0,"Saturday":0},
+            "temp":{"Sunday":0,"Monday":0,"Tuesday":0,"Wednesday":0,"Thursday":0,"Friday":0,"Saturday":0},
+            "flow":{"Sunday":0,"Monday":0,"Tuesday":0,"Wednesday":0,"Thursday":0,"Friday":0,"Saturday":0},
+            "clarity":{"Sunday":0,"Monday":0,"Tuesday":0,"Wednesday":0,"Thursday":0,"Friday":0,"Saturday":0}}
+        for dataType in args:
+            x = 0
+            day = datetime.now()
+            if day.strftime('%w') == '1':
+                jsonFile[dataType][day.strftime('%A')] = self.dayAverage(day, dataType)
+            else:
+                while day.strftime('%w') != '1':
+                    day = datetime.now() - timedelta(x)
+                    jsonFile[dataType][day.strftime('%A')] = self.dayAverage(day, dataType)
+                    x += 1
+        return(jsonFile)
+
+    def monthChartData(self, *args):
+        jsonFile = {
+            "ph": {},
+            "temp": {},
+            "flow": {},
+            "clarity": {}
+            }
+        for dataType in args:
+            x = 0
+            day = datetime.now()
+            if day.strftime('%d') == '01':
+                jsonFile[dataType][int(day.strftime('%d'))] = self.dayAverage(day, dataType)
+            else:
+                while day.strftime('%d') != '01':
+                    day = datetime.now() - timedelta(x)
+                    jsonFile[dataType][int(day.strftime('%d'))] = self.dayAverage(day, dataType)
+                    x += 1
+        return(jsonFile)
+
+    def yearChartData(self, *args):
+        jsonFile = {"ph":{"January":0,"February":0,"March":0,"April":0,"May":0,"June":0,"July":0,"August":0,"September":0,"October":0,"November":0,"December":0},
+            "temp":{"January":0,"February":0,"March":0,"April":0,"May":0,"June":0,"July":0,"August":0,"September":0,"October":0,"November":0,"December":0},
+            "flow":{"January":0,"February":0,"March":0,"April":0,"May":0,"June":0,"July":0,"August":0,"September":0,"October":0,"November":0,"December":0},
+            "clarity":{"January":0,"February":0,"March":0,"April":0,"May":0,"June":0,"July":0,"August":0,"September":0,"October":0,"November":0,"December":0}}
+        for dataType in args:
+            for x in range(1,13):
+                date = datetime(2020, x, 1)
+                jsonFile[dataType][date.strftime('%B')] = self.monthAverage(x, dataType)
+        return(jsonFile)
 
     def __repr__(self):
         return '<Aquarium {}, Owner {}>'.format(self.name, self.userAquarium.username)
@@ -154,6 +212,8 @@ class AquariumData(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     temperature = db.Column(db.Integer)
     ph = db.Column(db.Integer)
+    filterFlow = db.Column(db.Integer)
+    waterClarity = db.Column(db.Integer)
     aquarium_id = db.Column(db.Integer, db.ForeignKey('aquarium.id'))
 
     def time(self):

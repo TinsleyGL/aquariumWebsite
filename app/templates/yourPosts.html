@@ -19,7 +19,11 @@
     {% if aquariumList is defined %}
     <!-- Middle Column -->
     <div class="w3-main" style="margin-left:300px;margin-top:43px;">
-        <div class="w3-row-padding" style="padding-top:22px">
+
+        <header class="w3-container" style="padding-top:22px">
+            <h5><b><i class="fa fa-dashboard"></i>Your Posts</b></h5>
+        </header>
+        <div class="w3-row-padding" style="padding-top:10px">
 
             {% if posts %}
             {% for post in posts %}
@@ -30,19 +34,21 @@
                 {% else %}
                 <img src="/images/avatarImages/avatar.png" class="w3-left w3-circle w3-margin-right" style="width:60px">
                 {% endif %}
-                <span class="w3-right w3-opacity">{{ post.timestamp }}</span>
+                <span class="w3-right w3-opacity">{{ post.readDate()}} {{ post.readTime()}}</span>
                 <h4>{{ post.author.username }}</h4> <br>
                 <hr class="w3-clear">
                 <p>{{post.body}}</p>
                 {% if post.image_url %}
                 <div class="w3-row-padding" style="margin:0 -16px">
                     <div class="w3-half">
-                        <img src=/images/postImages/{{post.image_filename}} style="width:auto; height:250px"
-                            alt="Northern Lights" class="w3-margin-bottom">
+                        <img src=/images/{{post.image_filename}} style="width:auto; height:250px" alt="post image"
+                            class="w3-margin-bottom">
                     </div>
                 </div>
                 {% endif %}
                 <hr class="w3-clear">
+                <a href="{{ url_for('deletePost', post = post.id) }}"
+                    class="w3-button w3-indigo w3-margin-bottom w3-round-large">Delete Post?</a>
             </div>
             {% endfor %}
             {% endif %}

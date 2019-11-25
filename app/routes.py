@@ -1,6 +1,6 @@
 from app import app, db, images
 from app.models import User, Post, Aquarium, AquariumData
-from app.forms import LoginForm,RegistrationForm, CreateAquariumForm, CreatePostForm, CreateImagePostForm, UpdateAquariumImageForm, UpdateProfilePictureForm
+from app.forms import LoginForm,RegistrationForm, CreateAquariumForm, CreatePostForm, UpdateAquariumImageForm, UpdateProfilePictureForm
 from flask import request, render_template, flash, redirect,url_for, make_response
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
@@ -93,17 +93,24 @@ def createAquarium():
     aquariumForm = CreateAquariumForm()
     a = Aquarium (
         name=aquariumForm.aquariumName.data, 
-        userAquarium=current_user
+        userAquarium=current_user,
+        targetTemperature = aquariumForm.targetTemp.data,
+        targetPH = aquariumForm.targetPH.data,
+        targetWaterflow = aquariumForm.targetWaterflow.data,
+        targetClarity = aquariumForm.targetClarity.data
     )
     tempData = AquariumData (
         linkedAquarium = a,
         temperature = 0,
-        ph = 0
+        ph = 0,
+        filterFlow = 0,
+        waterClarity = 0
     )
     db.session.add(a)
     db.session.add(tempData)
     db.session.commit()
     return redirect(url_for('user', username=current_user.username))
+
 
 @app.route('/createPost', methods = ['POST', 'GET'])
 @login_required
@@ -189,25 +196,32 @@ def user1(username, aquarium):
 @app.route('/user/<username>/<aquarium>/analysis')
 @login_required
 def analysis(username, aquarium):
+    profileImageForm = UpdateProfilePictureForm()
     user = User.query.filter_by(username=username).first_or_404()
     aquariumList = user.aquariums.all()
     defaultAquarium = Aquarium.query.filter(Aquarium.name == aquarium ).filter(Aquarium.user_id == user.id).first()
-    return render_template('analysis.html', user=user, aquariumList=aquariumList, defaultAquarium=defaultAquarium)
+    weeklyChartData = defaultAquarium.weekChartData('ph','temp','flow','clarity')
+    monthlyChartData = defaultAquarium.monthChartData('ph','temp','flow','clarity')
+    yearlyChartData = defaultAquarium.yearChartData('ph','temp','flow','clarity')
+    return render_template('analysis.html', user=user, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
+    weeklyChartData=weeklyChartData, monthlyChartData=monthlyChartData, yearlyChartData=yearlyChartData, profileImageForm = profileImageForm)
 
 @app.route('/user/<username>/newsfeed')
 @login_required
 def newsfeed(username):
     form = CreatePostForm()
+    profileImageForm = UpdateProfilePictureForm()
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.order_by(Post.timestamp.desc())
     aquariumList = user.aquariums.all()
     defaultAquarium = aquariumList[0]
     return render_template('newsfeed.html', user=user, posts=posts, aquariumList=aquariumList,
-        form=form, defaultAquarium=defaultAquarium)
+        form=form, defaultAquarium=defaultAquarium,profileImageForm=profileImageForm)
 
 @app.route('/user/<username>/yourPosts')
 @login_required
 def yourPosts(username):
+    profileImageForm = UpdateProfilePictureForm()
     user = User.query.filter_by(username=username).first_or_404()
     posts = user.posts.order_by(Post.timestamp.desc())
     aquariumList = user.aquariums.all()
@@ -218,11 +232,12 @@ def yourPosts(username):
         defaultAquariumDataFile = defaultAquarium.data
         defaultAquariumDataOrdered = defaultAquariumDataFile.order_by(AquariumData.timestamp.desc()).first()
         return render_template('yourPosts.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
-            defaultAquariumDataOrdered=defaultAquariumDataOrdered)
+            defaultAquariumDataOrdered=defaultAquariumDataOrdered,profileImageForm=profileImageForm)
 
 @app.route('/user/<username>/followedUsers')
 @login_required
 def followedUsers(username):
+    profileImageForm = UpdateProfilePictureForm()
     user = User.query.filter_by(username=username).first_or_404()
     posts = user.followed_posts().all()
     aquariumList = user.aquariums.all()
@@ -233,7 +248,59 @@ def followedUsers(username):
         defaultAquariumDataFile = defaultAquarium.data
         defaultAquariumDataOrdered = defaultAquariumDataFile.order_by(AquariumData.timestamp.desc()).first()
         return render_template('followedUsers.html', user=user, posts=posts, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
-            defaultAquariumDataOrdered=defaultAquariumDataOrdered)
+            defaultAquariumDataOrdered=defaultAquariumDataOrdered,profileImageForm=profileImageForm)
+
+@app.route('/user/<username>/addAquarium')
+@login_required
+def addAquarium(username):
+    profileImageForm = UpdateProfilePictureForm()
+    user = User.query.filter_by(username=username).first_or_404()
+    aquariumForm = CreateAquariumForm()
+    aquariumList = user.aquariums.all()
+    addAquariumCheck = True
+    return render_template('user.html', user=user, aquariumForm=aquariumForm, 
+        addAquariumCheck=addAquariumCheck, aquariumList=aquariumList, profileImageForm=profileImageForm)
+
+
+@app.route('/followUser/<username>')
+@login_required
+def followUser(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return redirect(url_for('newsfeed', username=username))
+    if user == current_user:
+        return redirect(url_for('newsfeed', username=username))
+    current_user.follow(user)
+    db.session.commit()
+    return redirect(url_for('newsfeed', username=current_user.username))
+
+@app.route('/unfollowUser/<username>')
+@login_required
+def unfollowUser(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return redirect(url_for('newsfeed', username=username))
+    if user == current_user:
+        return redirect(url_for('newsfeed', username=username))
+    current_user.unfollow(user)
+    db.session.commit()
+    return redirect(url_for('newsfeed', username=current_user.username))
+
+@app.route('/deletePost/<post>')
+@login_required
+def deletePost(post):
+    post = Post.query.filter_by(author=current_user).filter_by(id=int(post)).first()
+    db.session.delete(post)
+    db.session.commit()
+    return redirect(url_for('newsfeed', username=current_user.username))
+
+@app.route('/deleteAquarium/<aquarium>')
+@login_required
+def deleteAquarium(aquarium):
+    aqua = Aquarium.query.filter_by(userAquarium=current_user).filter_by(id=int(aquarium)).first()
+    db.session.delete(aqua)
+    db.session.commit()
+    return redirect(url_for('user', username=current_user.username))
 
 @socketio.on('client_connected')
 def handle_client_connect_event(json):
@@ -246,7 +313,9 @@ def handle(json):
         a = aquariums.data.order_by(AquariumData.timestamp.desc())
         dict = {
             'temp': a.first().temperature,
-            'ph': a.first().ph
+            'ph': a.first().ph,
+            'filterFlow' : a.first().filterFlow,
+            'clarity' : a.first().waterClarity
         }
         jsonFile[aquariums.name] = dict
     emit('data', jsonFile
@@ -264,9 +333,10 @@ def handleRequest(json):
         a = aquariums.data.order_by(AquariumData.timestamp.desc())
         dict = {
             'temp': a.first().temperature,
-            'ph': a.first().ph
+            'ph': a.first().ph,
+            'filterFlow' : a.first().filterFlow,
+            'clarity' : a.first().waterClarity
         }
         jsonFile[aquariums.name] = dict
-    print (jsonFile)
     emit('returnAnalysisData', jsonFile
     )

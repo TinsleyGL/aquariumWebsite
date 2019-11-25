@@ -1,51 +1,60 @@
 <div class="w3-main" style="margin-left:300px;margin-top:43px;">
-        <div class="w3-row-padding w3-padding-32 w3-container">
-            <div class="w3-content">
-                <div class="w3-twothird">
-                    <h1>Add your first aquarium</h1>
-                    <h5 class="w3-padding-16">
-                        Add your aquarium details below so you can monitor it wherever you are. <br>
-                        If any of the parameters drop below the normal levels for too long, we'll notify you so you
-                        can prevent accidents <br>
-                    </h5>
-                    {{ aquariumForm.hidden_tag() }}
+    <div class="w3-row-padding w3-padding-32 w3-container">
+        <div class="w3-content">
+            <div class="w3-twothird">
+                <h1>Add an aquarium</h1>
+                <h5 class="w3-padding-16">
+                    Add your aquarium details below so you can monitor it wherever you are. <br>
+                    If any of the parameters drop below the normal levels for too long, we'll notify you so you
+                    can prevent accidents <br>
+                </h5>
+                {{ aquariumForm.hidden_tag() }}
 
-                    <form action="/createAquarium" method="POST" novalidate>
-                        <div class='w3-row-padding'>
-                            <div class='w3-half'>
-                                <label> {{ aquariumForm.aquariumName.label }}</label>
-                                <p>{{ aquariumForm.aquariumName(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter Aquarium Name") }}
-                                    {% for error in aquariumForm.aquariumName.errors %}
-                                    <span style="color: red;">[{{ error }}]</span>
-                                    {% endfor %}
-                            </div>
-                            <div class='w3-half'>
-                                <label> {{ aquariumForm.targetTemp.label }}</label>
-                                <p>{{ aquariumForm.targetTemp(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter Temperature") }}
-                                    {% for error in aquariumForm.targetTemp.errors %}
-                                    <span style="color: red;">[{{ error }}]</span>
-                                    {% endfor %}
-                            </div>
+                <form action="/createAquarium" method="POST" novalidate>
+                    <div class='w3-row-padding'>
+                        <label> {{ aquariumForm.aquariumName.label }}</label>
+                        <p>{{ aquariumForm.aquariumName(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter Aquarium Name") }}
+                            {% for error in aquariumForm.aquariumName.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                    </div>
+
+                    <div class='w3-row-padding'>
+                        <div class='w3-half'>
+                            <label> {{ aquariumForm.targetTemp.label }}</label>
+                            <p>{{ aquariumForm.targetTemp(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter Temperature") }}
+                                {% for error in aquariumForm.targetTemp.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
                         </div>
-                        <div class='w3-row-padding'>
-                            <div class='w3-half'>
-                                <label> {{ aquariumForm.targetPH.label }}</label>
-                                <p>{{ aquariumForm.targetPH(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter PH") }}
-                                    {% for error in aquariumForm.targetPH.errors %}
-                                    <span style="color: red;">[{{ error }}]</span>
-                                    {% endfor %}
-                            </div>
-                            <div class='w3-half'>
-                                <label> {{ aquariumForm.targetWaterflow.label }}</label>
-                                <p>{{ aquariumForm.targetWaterflow(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter Flow Rate") }}
-                                    {% for error in aquariumForm.targetWaterflow.errors %}
-                                    <span style="color: red;">[{{ error }}]</span>
-                                    {% endfor %}
-                            </div>
+                        <div class='w3-half'>
+                            <label> {{ aquariumForm.targetPH.label }}</label>
+                            <p>{{ aquariumForm.targetPH(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter PH") }}
+                                {% for error in aquariumForm.targetPH.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
                         </div>
-                        <p>{{ aquariumForm.createAquarium(class="w3-button w3-block w3-green w3-section w3-padding") }} </p>
-                    </form>
-                </div>
+                    </div>
+                    <div class='w3-row-padding'>
+                        <div class='w3-half'>
+                            <label> {{ aquariumForm.targetWaterflow.label }}</label>
+                            <p>{{ aquariumForm.targetWaterflow(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter your filters flow rate") }}
+                                {% for error in aquariumForm.targetWaterflow.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                        </div>
+                        <div class='w3-half'>
+                            <label> {{ aquariumForm.targetClarity.label }}</label>
+                            <p>{{ aquariumForm.targetClarity(class_="w3-input w3-border w3-margin-bottom w3-text-grey",placeholder="Enter your ideal clarity %") }}
+                                {% for error in aquariumForm.targetClarity.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                                {% endfor %}
+                        </div>
+                    </div>
+                    <p>{{ aquariumForm.createAquarium(class="w3-button w3-block w3-indigo w3-section w3-padding w3-round-xlarge") }}
+                    </p>
+                </form>
             </div>
         </div>
     </div>
+</div>

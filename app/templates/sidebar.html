@@ -11,9 +11,6 @@
         </div>
         <div class="w3-col s8 w3-bar">
             <span>Welcome, <strong>{{user.username}}</strong></span><br>
-            <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
-            <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
-            <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
         </div>
     </div>
     <hr>
@@ -23,7 +20,7 @@
     <div class="w3-bar-block">
         <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black"
             onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
-        <a href="#" class="w3-bar-item w3-button w3-padding w3-blue" onclick="myFunction('aquariumAccordion')"><i
+        <a href="#" class="w3-bar-item w3-button w3-padding" onclick="myFunction('aquariumAccordion')"><i
                 class="fas fa-fish w3-margin-right"></i>
             </i> Your Aquariums <i class="fas fa-chevron-down w3-right"></i></a>
         <div id='aquariumAccordion' class="w3-hide">
@@ -34,7 +31,8 @@
                     class="fas fa-fish w3-margin-right"></i>
                 {{ aquarium.name }}</a>
             {% endfor %}
-            <a href='#' class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i
+            <a href="{{ url_for('addAquarium', username=current_user.username) }}"
+                class="w3-bar-item w3-button w3-padding w3-small w3-margin-left"><i
                     class="fas fa-fish w3-margin-right"></i> Add Aquarium</a>
             {% endif %}
         </div>
@@ -50,13 +48,81 @@
                 {{ aquarium.name }}</a>
             {% endfor %}
         </div>
-        {% endif %}
+        <a href="{{ url_for('newsfeed', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding"><i
+                class="far fa-newspaper w3-margin-right"></i>
+            Newsfeed</a>
         <a href="{{ url_for('followedUsers', username=current_user.username) }}"
             class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw w3-margin-right"></i>
             Followed Users</a>
         <a href="{{ url_for('yourPosts', username=current_user.username) }}" class="w3-bar-item w3-button w3-padding"><i
                 class="fas fa-comments w3-margin-right"></i>
             Your Posts</a>
-
+        {% endif %}
     </div>
 </nav>
+
+<!-- Modal for updating your profile image -->
+<div id="id02" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom">
+        <header class="w3-container w3-indigo">
+            <span onclick="document.getElementById('id02').style.display='none'"
+                class="w3-button w3-indigo w3-xlarge w3-display-topright">&times;</span>
+            <h2>Profile Picture</h2>
+        </header>
+
+        <div class="w3-bar w3-border-bottom">
+            <button class="imageLink w3-bar-item w3-button" onclick="openImageLink(event, 'currentProfileImage')">Current
+                Profile Picture</button>
+            <button class="imageLink w3-bar-item w3-button" onclick="openImageLink(event, 'changeProfileImage')">Change Profile
+                Picture</button>
+        </div>
+
+        <div id="currentProfileImage" class="w3-container tab">
+            {% if user.image_filename %}
+            <img src="/images/{{ user.image_filename }}" class="w3-circle w3-margin-right"
+                style="width:600px;height:auto">
+            {% else %}
+            <img src="/images/avatarImages/avatar.png" class="w3-circle w3-margin-right"
+                style="width:600px;height:auto">
+            {% endif %}
+        </div>
+
+        <div id="changeProfileImage" class="w3-container tab">
+            <form action="/updateProfileImage" method="POST" enctype="multipart/form-data" novalidate>
+                {{ profileImageForm.hidden_tag() }}
+                <div class='w3-section'>
+                    <div class="w3-bar">
+                        <p>{{ profileImageForm.uploadImage(class="w3-bar-item w3-button w3-padding w3-margin-right w3-indigo w3-round-large") }}
+                        </p>
+                        <p>{{ profileImageForm.profileImage(class="w3-bar-item w3-button w3-padding w3-indigo w3-round-large")}}
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="w3-container w3-light-grey w3-padding">
+            <button class="w3-button w3-right w3-white w3-border"
+                onclick="document.getElementById('id02').style.display='none'">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementsByClassName("imageLink")[0].click();
+
+    function openImageLink(evt, tabName) {
+        var i, x, tablinks;
+        x = document.getElementsByClassName("tab");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("imageLink");
+        for (i = 0; i < x.length; i++) {
+            tablinks[i].classList.remove("w3-light-grey");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("w3-light-grey");
+    }
+</script>
+<!-- End of modal for updating your profile image -->
