@@ -103,20 +103,20 @@ class Aquarium(db.Model):
         list = []
         try:
             for d in self.data:
-                if d.timestamp == value and param == 'ph':
+                if d.timestamp.strftime('%x') == value and param == 'ph':
                     list.append(int(d.ph))
-                elif d.timestamp == value and param == 'temp':
+                elif d.timestamp.strftime('%x') == value and param == 'temp':
                     list.append(int(d.temperature))
-                elif d.timestamp == value and param == 'flow':
+                elif d.timestamp.strftime('%x') == value and param == 'flow':
                     list.append(int(d.filterFlow))
-                elif d.timestamp == value and param == 'clarity':
+                elif d.timestamp.strftime('%x') == value and param == 'clarity':
                     list.append(int(d.waterClarity))
             mean = (statistics.mean(list))
             return mean
         except:
             pass
             #print("An exception occurred")
-            return 1
+            return 0
 
     def monthAverage(self, value, param):
         list = []
@@ -135,26 +135,7 @@ class Aquarium(db.Model):
         except:
             pass
             #print("An exception occurred")
-        return 1
-
-    def yearAverage(self, value, param):
-        list = []
-        try:
-            for d in self.data:
-                if d.timestamp.year == value and param == 'ph':
-                    list.append(int(d.ph))
-                elif d.timestamp.year == value and param == 'temp':
-                    list.append(int(d.temperature))
-                elif d.timestamp.year == value and param == 'flow':
-                    list.append(int(d.filterFlow))
-                elif d.timestamp.year == value and param == 'clarity':
-                    list.append(int(d.waterClarity))
-        except:
-            pass
-            #print("An exception occurred")
-        mean = (statistics.mean(list))
-        return mean
-
+            return 0
 
     #dataType should be temp,ph,waterflow,clarity 
     def weekChartData(self, *args):
@@ -166,11 +147,11 @@ class Aquarium(db.Model):
             x = 0
             day = datetime.now()
             if day.strftime('%w') == '1':
-                jsonFile[dataType][day.strftime('%A')] = self.dayAverage(day, dataType)
+                jsonFile[dataType][day.strftime('%A')] = self.dayAverage(day.strftime('%x'), dataType)
             else:
                 while day.strftime('%w') != '1':
                     day = datetime.now() - timedelta(x)
-                    jsonFile[dataType][day.strftime('%A')] = self.dayAverage(day, dataType)
+                    jsonFile[dataType][day.strftime('%A')] = self.dayAverage(day.strftime('%x'), dataType)
                     x += 1
         return(jsonFile)
 
@@ -185,11 +166,11 @@ class Aquarium(db.Model):
             x = 0
             day = datetime.now()
             if day.strftime('%d') == '01':
-                jsonFile[dataType][int(day.strftime('%d'))] = self.dayAverage(day, dataType)
+                jsonFile[dataType][int(day.strftime('%d'))] = self.dayAverage(day.strftime('%x'), dataType)
             else:
                 while day.strftime('%d') != '01':
                     day = datetime.now() - timedelta(x)
-                    jsonFile[dataType][int(day.strftime('%d'))] = self.dayAverage(day, dataType)
+                    jsonFile[dataType][int(day.strftime('%d'))] = self.dayAverage(day.strftime('%x'), dataType)
                     x += 1
         return(jsonFile)
 
@@ -215,6 +196,21 @@ class AquariumData(db.Model):
     filterFlow = db.Column(db.Integer)
     waterClarity = db.Column(db.Integer)
     aquarium_id = db.Column(db.Integer, db.ForeignKey('aquarium.id'))
+
+    def filterFlowPercentage(self):
+        manuFlowRate = self.linkedAquarium.targetWaterflow
+        percentage = (self.filterFlow/manuFlowRate)*100
+        return "{0:.0%}".format(percentage)
+
+    def waterClarityPercentage(self):
+        waterList = [2.79,2.71,2.51,2.54,2.7,2.64]
+        clearwater = 4.27
+        dirtyWaterMean = statistics.mean(waterList)
+        if self.waterClarity >=4.27:
+            return 100
+        else:
+            differencePercentage = ((clearwater-self.waterClarity)/((clearwater+self.waterClarity)/2))
+            return differencePercentage
 
     def time(self):
         return self.timestamp

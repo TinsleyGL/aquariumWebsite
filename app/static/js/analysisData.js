@@ -2,7 +2,7 @@ var weeklyChartD = JSON.parse(document.getElementById("mydiv1").dataset.data1);
 var monthlyChartD = JSON.parse(document.getElementById("mydiv2").dataset.data2);
 var yearlyChartD = JSON.parse(document.getElementById("mydiv3").dataset.data3);
 //console.log(weeklyChartD)
-//console.log(monthlyChartD)
+console.log(monthlyChartD)
 //console.log(yearlyChartD)
 //console.log(Object.values(monthlyChartD['clarity']));
 
@@ -27,7 +27,8 @@ socket.on('returnAnalysisData', function (data) {
                 addData(tempChart, newLabel, data[a].temp)
                 addData(phChart, newLabel, data[a].ph)
                 addData(wfChart, newLabel, data[a].filterFlow)
-                addData(clarityChart, newLabel, data[a].clarity)
+                addData(clarityChart, newLabel, parseFloat(data[a].clarity))
+                console.log(data[a].clarity)
             } catch (error) {
                 console.log(error)
             }
@@ -130,7 +131,7 @@ var clarityChart = new Chart(clarityChartid, {
             yAxes: [{
                 ticks: {
                     suggestedMin: 0,
-                    suggestedMax: 100
+                    suggestedMax: 10
                 }
             }]
         }
@@ -231,7 +232,7 @@ var clarityWeeklyChart = new Chart(clarityWeeklyChartid, {
             yAxes: [{
                 ticks: {
                     suggestedMin: 0,
-                    suggestedMax: 100
+                    suggestedMax: 10
                 }
             }]
         }
@@ -326,20 +327,20 @@ var clarityMonthlyChart = new Chart(clarityMonthlyChartid, {
             yAxes: [{
                 ticks: {
                     suggestedMin: 0,
-                    suggestedMax: 100
+                    suggestedMax: 10
                 }
             }]
         }
     }
 });
 
-for (i=1; i < 31; i++) {
-    if (monthlyChartD['temp'][i]) {
+for (i=1; i < 32; i++) {
+    if (monthlyChartD['temp'][i] || monthlyChartD['temp'][i] == 0) {
         console.log(monthlyChartD['temp'][i])
         addData(tempMonthlyChart, i.toString(), monthlyChartD['temp'][i])
-        addData(phMonthlyChart, i.toString(), monthlyChartD['temp'][i])
-        addData(wfMonthlyChart, i.toString(), monthlyChartD['temp'][i])
-        addData(clarityMonthlyChart, i.toString(), monthlyChartD['temp'][i])
+        addData(phMonthlyChart, i.toString(), monthlyChartD['ph'][i])
+        addData(wfMonthlyChart, i.toString(), monthlyChartD['flow'][i])
+        addData(clarityMonthlyChart, i.toString(), monthlyChartD['clarity'][i])
     }
 };
 
@@ -439,7 +440,7 @@ var clarityYearlyChartid = new Chart(clarityYearlyChartid, {
             yAxes: [{
                 ticks: {
                     suggestedMin: 0,
-                    suggestedMax: 100
+                    suggestedMax: 10
                 }
             }]
         }
@@ -452,7 +453,11 @@ var clarityYearlyChartid = new Chart(clarityYearlyChartid, {
 function addData(chart, label, data) {
     chart.data.labels.push(label);
     chart.data.datasets.forEach((dataset) => {
-        dataset.data.push(data);
+        if (data) {
+            dataset.data.push(data);
+        } else {
+            dataset.data.push(0);
+        }
     });
     chart.update();
 }

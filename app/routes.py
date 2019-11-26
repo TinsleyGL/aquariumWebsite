@@ -62,7 +62,9 @@ def testdata():
         request.form.get('UserID'),
         request.form.get('Aquarium'),
         request.form.get('Temperature'),
-        request.form.get('PH'),
+        request.form.get('pH'),
+        request.form.get('Flow'),
+        request.form.get('Turbidity')
     )
     return ('success')
 
@@ -73,7 +75,9 @@ def receive_data():
         request.form.get('UserID'),
         request.form.get('Aquarium'),
         request.form.get('Temperature'),
-        request.form.get('PH'),
+        request.form.get('pH'),
+        request.form.get('Flow'),
+        request.form.get('Turbidity')
     )
     user = User.query.filter(User.username == request.form.get('UserID')).first()
     aqua = Aquarium.query.filter(Aquarium.userAquarium == user).filter(Aquarium.name == request.form.get('Aquarium')).first()
@@ -81,35 +85,42 @@ def receive_data():
     data = AquariumData (
         linkedAquarium = aqua,
         temperature = request.form.get('Temperature'),
-        ph = request.form.get('PH')
+        ph = request.form.get('pH'),
+        filterFlow = request.form.get('Flow'),
+        waterClarity = request.form.get('Turbidity')
     )
     db.session.add(data)
     db.session.commit()
-    return ('hello')
+    return ('success')
 
 @app.route('/createAquarium', methods=['POST', 'GET'])
 @login_required
 def createAquarium():
     aquariumForm = CreateAquariumForm()
-    a = Aquarium (
-        name=aquariumForm.aquariumName.data, 
-        userAquarium=current_user,
-        targetTemperature = aquariumForm.targetTemp.data,
-        targetPH = aquariumForm.targetPH.data,
-        targetWaterflow = aquariumForm.targetWaterflow.data,
-        targetClarity = aquariumForm.targetClarity.data
-    )
-    tempData = AquariumData (
-        linkedAquarium = a,
-        temperature = 0,
-        ph = 0,
-        filterFlow = 0,
-        waterClarity = 0
-    )
-    db.session.add(a)
-    db.session.add(tempData)
-    db.session.commit()
-    return redirect(url_for('user', username=current_user.username))
+    #if the aquarium name already exists
+    if not Aquarium.query.filter_by(userAquarium=current_user).filter_by(name=aquariumForm.aquariumName.data).first():
+        a = Aquarium (
+            name=aquariumForm.aquariumName.data, 
+            userAquarium=current_user,
+            targetTemperature = aquariumForm.targetTemp.data,
+            targetPH = aquariumForm.targetPH.data,
+            targetWaterflow = aquariumForm.targetWaterflow.data,
+            targetClarity = aquariumForm.targetClarity.data
+        )
+        tempData = AquariumData (
+            linkedAquarium = a,
+            temperature = 0,
+            ph = 0,
+            filterFlow = 0,
+            waterClarity = 0
+        )
+        db.session.add(a)
+        db.session.add(tempData)
+        db.session.commit()
+        return redirect(url_for('user', username=current_user.username))
+    elif Aquarium.query.filter_by(userAquarium=current_user).filter_by(name=aquariumForm.aquariumName.data).first(): 
+        flash(u'Aquarium already exists, please try another name', 'createError')
+        return redirect(url_for('addAquarium', username = current_user.username))        
 
 
 @app.route('/createPost', methods = ['POST', 'GET'])

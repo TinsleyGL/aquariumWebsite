@@ -68,7 +68,11 @@
                         <h3 id="{{ defaultAquarium.name }}Clarity">{{ defaultAquariumDataOrdered.waterClarity }}</h3>
                     </div>
                     <div class="w3-clear"></div>
-                    <h4>Water Clarity</h4>
+                    {% if defaultAquariumDataOrdered.waterClarity > 4  %}
+                    <h4 id='clarityNote'>Water Clarity - Clear</h4>
+                    {% elif defaultAquariumDataOrdered.waterClarity < 4 %}
+                    <h4 id='clarityNote'>Water Clarity - Cloudy</h4>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -140,42 +144,27 @@
 
                 </div>
                 <div class="w3-twothird">
-                    <h5>Latest comments</h5>
-                    <table class="w3-table w3-striped w3-white">
+                    <h5>Latest Updates</h5>
+                    <table id="updateTables" class="w3-table w3-striped w3-white">
                         <tr>
-                            <td><i class="fa fa-user w3-text-blue w3-large"></i></td>
-                            <td>New record, over 90 views.</td>
-                            <td><i>10 mins</i></td>
+                            <td><i class="fas fa-thermometer-quarter w3-text-indigo w3-large"></i></td>
+                            <td id='tempTableUpdate'>No changes in temperature</td>
+                            <td id='tempTableTime'><i></i></td>
                         </tr>
                         <tr>
-                            <td><i class="fa fa-bell w3-text-red w3-large"></i></td>
-                            <td>Database error.</td>
-                            <td><i>15 mins</i></td>
+                            <td><i class="fas fa-flask w3-text-indigo w3-large"></i></td>
+                            <td id='phTableUpdate'>No changes in pH</td>
+                            <td id='phTableTime'><i></i></td>
                         </tr>
                         <tr>
-                            <td><i class="fa fa-users w3-text-yellow w3-large"></i></td>
-                            <td>New record, over 40 users.</td>
-                            <td><i>17 mins</i></td>
+                            <td><i class="fas fa-water w3-text-indigo w3-large"></i></td>
+                            <td id='wfTableUpdate'>No changes in filter flow</td>
+                            <td id='wfTableTime'><i></i></td>
                         </tr>
                         <tr>
-                            <td><i class="fa fa-comment w3-text-red w3-large"></i></td>
-                            <td>New comments.</td>
-                            <td><i>25 mins</i></td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
-                            <td>Check transactions.</td>
-                            <td><i>28 mins</i></td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-laptop w3-text-red w3-large"></i></td>
-                            <td>CPU overload.</td>
-                            <td><i>35 mins</i></td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-share-alt w3-text-green w3-large"></i></td>
-                            <td>New shares.</td>
-                            <td><i>39 mins</i></td>
+                            <td><i class="fas fa-tint w3-text-indigo w3-large"></i></td>
+                            <td id='clarityTableUpdate'>No changes in water clarity</td>
+                            <td id='clarityTableTime'><i></i></td>
                         </tr>
                     </table>
                 </div>
@@ -198,7 +187,7 @@
 
                     <div class="w3-container w3-center">
                         <p>Are you sure?</p>
-                        <a href="{{ url_for('deleteAquarium', aquarium=defaultAquarium.id) }}" 
+                        <a href="{{ url_for('deleteAquarium', aquarium=defaultAquarium.id) }}"
                             class="w3-button w3-indigo w3-margin-bottom w3-round-large" style="width: 25%">Yes</a>
                     </div>
 
