@@ -1,14 +1,13 @@
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 socket.on('connect', function() {
-    // we emit a connected message to let knwo the client that we are connected.
     socket.emit('client_connected', {data: 'connected'});
 });
 
 function sendData(){
     socket.emit('sendData', {data: 'Request'});
 };
-setInterval(sendData,5000)
 
+setInterval(sendData,5000)
 socket.on('data' ,function(data){
     for (a in data) {
         if (document.getElementById(a + "temperature")) {
@@ -46,7 +45,6 @@ socket.on('data' ,function(data){
 function tableUpdater(type, data){
     var dt = new Date()
     var label = String(dt.getHours()) + ':' + String(dt.getMinutes()) + ':' + String(dt.getSeconds())
-    
     if (type == 'temp') {
         document.getElementById('tempTableUpdate').innerHTML = "Change in temperature: " + data;
         document.getElementById('tempTableTime').innerHTML  = label

@@ -115,7 +115,6 @@ class Aquarium(db.Model):
             return mean
         except:
             pass
-            #print("An exception occurred")
             return 0
 
     def monthAverage(self, value, param):

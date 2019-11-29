@@ -2,7 +2,7 @@ var weeklyChartD = JSON.parse(document.getElementById("mydiv1").dataset.data1);
 var monthlyChartD = JSON.parse(document.getElementById("mydiv2").dataset.data2);
 var yearlyChartD = JSON.parse(document.getElementById("mydiv3").dataset.data3);
 //console.log(weeklyChartD)
-console.log(monthlyChartD)
+//console.log(monthlyChartD)
 //console.log(yearlyChartD)
 //console.log(Object.values(monthlyChartD['clarity']));
 
@@ -16,7 +16,6 @@ function sendData(){
 };
 
 setInterval(sendData,5000)
-
 socket.on('returnAnalysisData', function (data) {
     for (a in data) {
         if (document.getElementById(a + "Analysis")) {
@@ -28,7 +27,6 @@ socket.on('returnAnalysisData', function (data) {
                 addData(phChart, newLabel, data[a].ph)
                 addData(wfChart, newLabel, data[a].filterFlow)
                 addData(clarityChart, newLabel, parseFloat(data[a].clarity))
-                console.log(data[a].clarity)
             } catch (error) {
                 console.log(error)
             }
@@ -336,7 +334,6 @@ var clarityMonthlyChart = new Chart(clarityMonthlyChartid, {
 
 for (i=1; i < 32; i++) {
     if (monthlyChartD['temp'][i] || monthlyChartD['temp'][i] == 0) {
-        console.log(monthlyChartD['temp'][i])
         addData(tempMonthlyChart, i.toString(), monthlyChartD['temp'][i])
         addData(phMonthlyChart, i.toString(), monthlyChartD['ph'][i])
         addData(wfMonthlyChart, i.toString(), monthlyChartD['flow'][i])

@@ -30,10 +30,7 @@ def index():
             flash(u'Invalid username or password', 'loginError')
             return redirect(url_for('index'))
         login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('user', username=current_user.username)
-        return redirect(next_page)
+        return redirect(url_for('user', username=current_user.username))
     elif regForm.validate_on_submit() and regForm.register.data:
         if regForm.validate_username(regForm.username) == False:
             flash(u'Please use a different username.', 'regError')
@@ -175,12 +172,13 @@ def updateProfileImage():
 @app.route('/user/<username>')
 @login_required
 def user(username):
+    profileImageForm = UpdateProfilePictureForm()
     user = User.query.filter_by(username=username).first_or_404()
     posts = user.posts.all()
     aquariumForm = CreateAquariumForm()
     aquariumList = user.aquariums.all()
     if len(aquariumList) == 0:
-        return render_template('user.html', user=user, posts=posts, aquariumForm=aquariumForm)
+        return render_template('user.html', user=user, posts=posts, aquariumForm=aquariumForm,profileImageForm=profileImageForm)
     else:    
         defaultAquarium = aquariumList[0]
         defaultAquariumDataFile = defaultAquarium.data
@@ -215,7 +213,8 @@ def analysis(username, aquarium):
     monthlyChartData = defaultAquarium.monthChartData('ph','temp','flow','clarity')
     yearlyChartData = defaultAquarium.yearChartData('ph','temp','flow','clarity')
     return render_template('analysis.html', user=user, aquariumList=aquariumList, defaultAquarium=defaultAquarium, 
-    weeklyChartData=weeklyChartData, monthlyChartData=monthlyChartData, yearlyChartData=yearlyChartData, profileImageForm = profileImageForm)
+    weeklyChartData=weeklyChartData, monthlyChartData=monthlyChartData, yearlyChartData=yearlyChartData, 
+    profileImageForm = profileImageForm)
 
 @app.route('/user/<username>/newsfeed')
 @login_required
